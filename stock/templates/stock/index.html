@@ -1,0 +1,15 @@
+{% extends "stock/layout.html" %}
+
+{% load static %}
+
+{% block script %}
+    <script type="text/babel" src="{% static 'stock/index.js' %}"></script>
+{% endblock %}
+
+{% block body %}
+<div id="main-indexes">
+    ---This is where the current indexes will be inserted!---
+</div>
+<div id="popular-stocks">
+</div>
+{% endblock %}

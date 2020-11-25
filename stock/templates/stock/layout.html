@@ -1,0 +1,26 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <title>{% block title %}{% endblock %}</title>
+        <link href="{% static 'stock/styles.css' %}" rel="stylesheet">
+        <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+        <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+        <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+        {% block script %}{% endblock %}
+    </head>
+    <body>
+        <div id="top-nav-bar">
+            <div class="top-bar-link" id="brand-title">Stocks</div>
+            <div class="top-bar-link" id="top-bar-home">Home</div>
+            <div class="top-bar-link" id="top-bar-watchlist">Watchlist</div>
+            <div class="top-bar-link" id="top-bar-search">Search</div>
+            <div class="top-bar-link" id="top-bar-profile">My Profile</div>
+        </div>
+        <div class="body">
+            {% block body %}{% endblock %}
+        </div>
+    </body>
+</html>

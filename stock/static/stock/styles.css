@@ -1,0 +1,107 @@
+
+/* ---layout.html--- */
+
+body {
+    margin: 0px;
+    background-color: rgb(46, 46, 46);
+    color: white;
+}
+ 
+.body {
+     margin: 10px;
+ }
+
+/* top nav bar */
+
+#top-nav-bar {
+    display: flex;
+    background-color: rgb(73, 73, 73);
+    padding: 2px;
+    height: 6vh;
+    width: 100%;
+    box-shadow: 1px 1px 6px black;
+    margin-top: -70px;
+    position: fixed;
+}
+
+.top-bar-link {
+    display: inline;
+    padding: 0px 4px 0px 4px;
+    vertical-align: middle;
+    margin: auto 10px auto 10px;
+    font-size: large;
+}
+
+#top-bar-profile {
+    margin-left: auto;
+}
+
+
+/* ---index.html--- */
+
+/* NSE and BSE indexes */
+
+#main-indexes {
+    display: flex;
+    width: 70%;
+    height: 10vh;
+    margin: 70px auto 0px auto;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    box-shadow: 1px 1px 10px black;
+}
+
+.index-stocks {
+    display: inline;
+    font-size: larger;
+    margin: 0px 10px 0px 10px;
+}
+
+/* Popular stocks table */
+
+#popular-stocks {
+    display: flex;
+    margin: 30px auto 0px auto;
+    width: 70%;
+    height: 75vh;
+    border-radius: 10px;
+    box-shadow: 1px 1px 10px black;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+#all-table-headers {
+    border-bottom: 1px solid rgb(160, 160, 160);
+}
+
+.table-headers {
+    font-size: large;
+    padding-bottom: 10px;
+}
+
+.table-data {
+    padding-top: 10px;
+    color: green;
+}
+
+tr {
+    border-bottom: 1px solid rgb(160, 160, 160);
+    height: 30px;
+}
+
+#table-symbol {
+    text-align: left;
+    font-size: large;
+}
+.table-price, .table-change, .table-open, .table-high, .table-low, .table-close {
+    text-align: center;
+}
+
+table {
+    margin: 10px;
+    table-layout: auto;
+    width: 100%;
+    border-collapse: collapse;
+}
+
