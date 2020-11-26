@@ -1,12 +1,54 @@
 
 // Yet to fetch and add realtime data
 class IndexStocks extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			BSEsymbol: this.props.BSEdata.symbol,
+			BSEexchangeTimezoneShortName: this.props.BSEdata.exchangeTimezoneShortName,
+			BSEquoteType: this.props.BSEdata.quoteType,
+			BSEmarketPrice: this.props.BSEdata.regularMarketPrice.raw.toFixed(2),
+			BSEmarketChange: this.props.BSEdata.regularMarketChange.raw.toFixed(2),
+			BSEmarketChangePercent: this.props.BSEdata.regularMarketChangePercent.fmt,
+			BSEmarketPreviousClose: this.props.BSEdata.regularMarketPreviousClose.raw,
+			NSEsymbol: this.props.NSEdata.symbol,
+			NSEexchangeTimezoneShortName: this.props.NSEdata.exchangeTimezoneShortName,
+			NSEquoteType: this.props.NSEdata.quoteType,
+			NSEmarketPrice: this.props.NSEdata.regularMarketPrice.raw.toFixed(2),
+			NSEmarketChange: this.props.NSEdata.regularMarketChange.raw.toFixed(2),
+			NSEmarketChangePercent: this.props.NSEdata.regularMarketChangePercent.fmt,
+			NSEmarketPreviousClose: this.props.NSEdata.regularMarketPreviousClose.raw,
+		}
+		if (this.state.BSEmarketChange < 0) {
+			this.BSEpriceColor = "red";
+		}
+		else {
+			this.BSEpriceColor = "green";
+		}
+		(this.state.NSEmarketChange < 0) ? (this.NSEpriceColor = "red") : (this.NSEpriceColor = "green");
+		(this.state.NSEmarketPreviousClose > this.state.NSEmarketPrice) ? (this.NSEprevColor = "rgb(0, 88, 0)") : (this.NSEprevColor = "rgb(146, 1, 1)");
+		(this.state.BSEmarketPreviousClose > this.state.BSEmarketPrice) ? (this.BSEprevColor = "rgb(0, 88, 0)") : (this.BSEprevColor = "rgb(146, 1, 1)");
+	}
 	render () {
 		return (
-			<div className="index-stocks-container">
-				<div className="index-stocks" id="index-NSE">NSE</div>
-				<div className="index-stocks" id="index-BSE">BSE</div>
-			</div>
+			<table id="main-indexes-table">
+				<tr className="big-row">
+					<td id="BSE-symbol">{this.state.BSEsymbol}</td>
+					<td id="BSE-market-price">{this.state.BSEmarketPrice}</td>
+					<td id="BSE-market-close" style={{color: this.BSEprevColor}}>{this.state.BSEmarketPreviousClose}</td>
+					<td id="NSE-symbol">{this.state.NSEsymbol}</td>
+					<td id="NSE-market-price">{this.state.NSEmarketPrice}</td>
+					<td id="NSE-market-close" style={{color: this.NSEprevColor}}>{this.state.NSEmarketPreviousClose}</td>
+				</tr>
+				<tr className="small-row">
+					<td id="BSE-lower-symbol">{this.state.BSEquoteType} | {this.state.BSEexchangeTimezoneShortName}</td>
+					<td id="BSE-market-change"><font color={this.BSEpriceColor}>{this.state.BSEmarketChange} ({this.state.BSEmarketChangePercent})</font></td>
+					<td id="BSE-lower-close">Previous market close</td>
+					<td id="NSE-lower-symbol">{this.state.NSEquoteType} | {this.state.NSEexchangeTimezoneShortName}</td>
+					<td id="NSE-market-change"><font color={this.NSEpriceColor}>{this.state.NSEmarketChange} ({this.state.NSEmarketChangePercent})</font></td>
+					<td id="NSE-lower-close">Previous market close</td>
+				</tr>
+			</table>
 		)
 	}
 }
@@ -74,9 +116,6 @@ class PopularStockTable extends React.Component {
 	}
 }
 
-// Render the BSE and NSE indexes, no realtime data added yet.
-ReactDOM.render(<IndexStocks/>, document.querySelector('#main-indexes'));
-
 // To request the Stock's data only once to keep within the request limit
 if (!localStorage.getItem('indexStocks')) {
 	fetch("https://yahoo-finance-low-latency.p.rapidapi.com/v6/finance/quote/marketSummary?lang=en&region=IN", {
@@ -88,9 +127,9 @@ if (!localStorage.getItem('indexStocks')) {
 })
 .then(response => response.json())
 .then(data => {
+	console.log(data)	
 	// Store the retrieved data locally in the browser.
 	localStorage.setItem('indexStocks', JSON.stringify(data));
-	console.log(data);
 })
 .catch(err => {
 	console.error(err);
@@ -101,9 +140,13 @@ if (!localStorage.getItem('indexStocks')) {
 else {
 	let indexStocks = localStorage.getItem('indexStocks');
 	indexStocks = JSON.parse(indexStocks);
-	indexStocks.marketSummaryResponse.result.slice(0, 2).forEach(element => {
-		console.log(element)		
-	});
+	// Render the BSE and NSE indexes, no realtime data added yet.
+ReactDOM.render(
+	<IndexStocks 
+		BSEdata={indexStocks.marketSummaryResponse.result[0]}
+		NSEdata={indexStocks.marketSummaryResponse.result[1]}
+	/>, document.querySelector('#main-indexes'));
+	console.log(indexStocks.marketSummaryResponse.result[0]);
 }
 
 

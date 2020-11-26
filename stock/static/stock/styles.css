@@ -17,7 +17,6 @@ body {
     display: flex;
     background-color: rgb(73, 73, 73);
     padding: 2px;
-    height: 6vh;
     width: 100%;
     box-shadow: 1px 1px 6px black;
     margin-top: -70px;
@@ -28,7 +27,7 @@ body {
     display: inline;
     padding: 0px 4px 0px 4px;
     vertical-align: middle;
-    margin: auto 10px auto 10px;
+    margin: 10px;
     font-size: large;
 }
 
@@ -44,27 +43,47 @@ body {
 #main-indexes {
     display: flex;
     width: 70%;
-    height: 10vh;
     margin: 70px auto 0px auto;
-    align-items: center;
-    justify-content: center;
     border-radius: 10px;
     box-shadow: 1px 1px 10px black;
 }
 
-.index-stocks {
-    display: inline;
-    font-size: larger;
-    margin: 0px 10px 0px 10px;
+#main-indexes-table {
+    border-collapse: collapse;
+    width: 100%;
+    text-align: center;
+    margin: 10px 0px 10px 0px;
 }
+
+.big-row {
+    font-size: 36px;
+}
+
+#BSE-lower-symbol, #NSE-lower-symbol {
+    font-size: 14px;
+    color: rgb(158, 158, 158);
+}
+
+#BSE-market-close, #BSE-lower-close  {
+    border-right: 1px solid white;
+}
+
+#BSE-market-close, #NSE-market-close {
+    color: rgb(146, 1, 1);
+}
+
+#BSE-lower-close, #NSE-lower-close {
+    color: rgb(158, 158, 158);
+}
+
 
 /* Popular stocks table */
 
 #popular-stocks {
     display: flex;
-    margin: 30px auto 0px auto;
+    margin: 30px auto 10px auto;
     width: 70%;
-    height: 75vh;
+    height: 77vh;
     border-radius: 10px;
     box-shadow: 1px 1px 10px black;
     overflow-y: scroll;
@@ -85,7 +104,7 @@ body {
     color: green;
 }
 
-tr {
+.table-row-data {
     border-bottom: 1px solid rgb(160, 160, 160);
     height: 30px;
 }
@@ -98,10 +117,23 @@ tr {
     text-align: center;
 }
 
-table {
+#popular-stocks-table {
     margin: 10px;
     table-layout: auto;
     width: 100%;
     border-collapse: collapse;
+}
+
+/* scrollbar of popular stocks */
+
+::-webkit-scrollbar {
+    width: 6px;
+    background-color: rgb(46, 46, 46);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: rgb(112, 112, 112);
+    border-radius: 5px;
 }
 
