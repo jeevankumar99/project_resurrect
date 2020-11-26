@@ -31,8 +31,13 @@ body {
     font-size: large;
 }
 
-#top-bar-profile {
+#top-bar-profile, #top-bar-login {
     margin-left: auto;
+}
+
+#top-bar-login, #top-bar-logout {
+    color: white;
+    text-decoration: none;
 }
 
 
@@ -65,7 +70,7 @@ body {
 }
 
 #BSE-market-close, #BSE-lower-close  {
-    border-right: 1px solid white;
+    border-right: 1px solid rgb(160, 160, 160);
 }
 
 #BSE-market-close, #NSE-market-close {

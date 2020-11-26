@@ -1,0 +1,25 @@
+{% extends "stock/layout.html" %}
+
+{% load static %}
+
+{% block body %}
+
+    {% if err_message %}
+        <div id="register-error-message">
+            {{ err_message }}
+        </div>
+    {% endif %}
+    <div id="register-container">
+        <h2>Register</h2>
+        <div id="register-form">
+            <form action="{% url 'register' %}" method="post">
+                {% csrf_token %}
+                <input autofocus class="register-input-field" id="register-username" name="username" type="text" placeholder="Username">
+                <input class="register-input-field" id="register-password" name="password" type="password" placeholder="Password">
+                <input class="register-input-field" id="register-password-confirm" name="password_confirm" type="password" placeholder="Confirm password">
+                <input id="register-button" type="submit" value="Register">
+            </form>
+        </div>
+    </div>
+
+{% endblock %}

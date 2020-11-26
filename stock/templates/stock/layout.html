@@ -17,7 +17,14 @@
             <div class="top-bar-link" id="top-bar-home">Home</div>
             <div class="top-bar-link" id="top-bar-watchlist">Watchlist</div>
             <div class="top-bar-link" id="top-bar-search">Search</div>
-            <div class="top-bar-link" id="top-bar-profile">My Profile</div>
+            {% if user.is_authenticated %}
+                <div class="top-bar-link" id="top-bar-profile">My Profile</div>
+                <a class="top-bar-link" id="top-bar-logout" href="{% url 'logout' %}">Logout</a>
+            {% else %}
+                <a class="top-bar-link" id="top-bar-login" href="{% url 'login' %}">
+                    <div id="top-bar-login-div">Login</div>
+                </a>
+            {% endif %}
         </div>
         <div class="body">
             {% block body %}{% endblock %}
