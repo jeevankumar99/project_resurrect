@@ -81,11 +81,25 @@ class PopularStockData extends React.Component {
 		}
 	}
 
+	// PASS CSRF COOKIES ---NOT SECURE---
+	addToWatchlist = function(event) {
+		event.stopPropagation();
+		console.log("Added to watchlist dummy!")
+		fetch("/add_watchlist", {
+			method: "POST", 
+			body: JSON.stringify({
+				stockSymbol: this.state.symbol
+			}),
+		})
+		console.log("request sent!")
+	}
+
 	render () {
 		return (
 			<tr onClick={() => window.location.href = `stock/${this.state.symbol}`} className="table-row-data">
 				<td className="table-data" className="table-symbol">
 					{this.state.symbol}
+					<button onClick={event => this.addToWatchlist(event)} className="watchlist-button">Watch</button>
 				</td>
 				<td className="table-data" className="table-price"><font color={this.priceColor}>$ {this.state.price}</font></td>
 				<td className="table-data" className="table-change">$ {this.state.marketChange} / {this.state.marketChangePercent} %</td>
@@ -206,4 +220,6 @@ else {
 	})
 	ReactDOM.render(<PopularStockTable stocksData={popularStockList}/>, document.querySelector('#popular-stocks'));
 }
+
+
 

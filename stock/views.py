@@ -1,11 +1,30 @@
+from django.conf.urls import url
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
-from django.http.response import Http404, HttpResponse, HttpResponseRedirect
+from django.contrib.auth.decorators import login_required
+from django.http.response import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.db import IntegrityError
+import json
 from django.shortcuts import render
 from django.urls import reverse
 from .models import *
 
 # Create your views here.
+
+# CSRF IS EXEMPTED ---NOT SECURE--- CORRECT IT!
+@login_required(login_url='/login')
+@csrf_exempt
+def add_watchlist(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        stock_symbol = data.get("stockSymbol")
+        user = User.objects.get(username=request.user)
+        Watchlist.objects.create(user=user, stock_symbol=stock_symbol)
+        print("Watchlist Updated backend!")
+        return JsonResponse({"message": "Added to watchlist!"}, status=201)
+    else:
+        return JsonResponse({"error": "request has to be POST"}, status=400)
+        
 
 def index(request):
     return render(request, "stock/index.html")
