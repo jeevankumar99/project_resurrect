@@ -14,11 +14,11 @@
     <body>
         <div id="top-nav-bar">
             <div class="top-bar-link" id="brand-title">Stocks</div>
-            <div class="top-bar-link" id="top-bar-home">Home</div>
+            <a class="top-bar-link" id="top-bar-home" href="{% url 'index' %}">Home</a>
             <div class="top-bar-link" id="top-bar-watchlist">Watchlist</div>
             <div class="top-bar-link" id="top-bar-search">Search</div>
             {% if user.is_authenticated %}
-                <div class="top-bar-link" id="top-bar-profile">My Profile</div>
+                <a class="top-bar-link" id="top-bar-profile" href="{% url 'profile' %}">{{ user }}</a>
                 <a class="top-bar-link" id="top-bar-logout" href="{% url 'logout' %}">Logout</a>
             {% else %}
                 <a class="top-bar-link" id="top-bar-login" href="{% url 'login' %}">
@@ -27,7 +27,8 @@
             {% endif %}
         </div>
         <div class="body">
-            {% block body %}{% endblock %}
+            {% block body %}
+            {% endblock %}
         </div>
     </body>
 </html>

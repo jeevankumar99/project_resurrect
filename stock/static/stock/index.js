@@ -32,14 +32,17 @@ class IndexStocks extends React.Component {
 	render () {
 		return (
 			<table id="main-indexes-table">
+				<thead>
 				<tr className="big-row">
-					<td id="BSE-symbol">{this.state.BSEsymbol}</td>
+					<td onClick={() => window.location.href = 'stock/BSE'} id="BSE-symbol">{this.state.BSEsymbol}</td>
 					<td id="BSE-market-price">{this.state.BSEmarketPrice}</td>
 					<td id="BSE-market-close" style={{color: this.BSEprevColor}}>{this.state.BSEmarketPreviousClose}</td>
-					<td id="NSE-symbol">{this.state.NSEsymbol}</td>
+					<td onClick={() => window.location.href = 'stock/NSE'} id="NSE-symbol">{this.state.NSEsymbol}</td>
 					<td id="NSE-market-price">{this.state.NSEmarketPrice}</td>
 					<td id="NSE-market-close" style={{color: this.NSEprevColor}}>{this.state.NSEmarketPreviousClose}</td>
 				</tr>
+				</thead>
+				<tbody>
 				<tr className="small-row">
 					<td id="BSE-lower-symbol">{this.state.BSEquoteType} | {this.state.BSEexchangeTimezoneShortName}</td>
 					<td id="BSE-market-change"><font color={this.BSEpriceColor}>{this.state.BSEmarketChange} ({this.state.BSEmarketChangePercent})</font></td>
@@ -48,6 +51,7 @@ class IndexStocks extends React.Component {
 					<td id="NSE-market-change"><font color={this.NSEpriceColor}>{this.state.NSEmarketChange} ({this.state.NSEmarketChangePercent})</font></td>
 					<td id="NSE-lower-close">Previous market close</td>
 				</tr>
+				</tbody>
 			</table>
 		)
 	}
@@ -79,8 +83,10 @@ class PopularStockData extends React.Component {
 
 	render () {
 		return (
-			<tr className="table-row-data">
-				<td className="table-data" className="table-symbol">{this.state.symbol}</td>
+			<tr onClick={() => window.location.href = `stock/${this.state.symbol}`} className="table-row-data">
+				<td className="table-data" className="table-symbol">
+					{this.state.symbol}
+				</td>
 				<td className="table-data" className="table-price"><font color={this.priceColor}>$ {this.state.price}</font></td>
 				<td className="table-data" className="table-change">$ {this.state.marketChange} / {this.state.marketChangePercent} %</td>
 				<td className="table-data" className="table-open">$ {this.state.marketOpen}</td>
@@ -99,18 +105,20 @@ class PopularStockTable extends React.Component {
 	render() {
 		return (
 			<table id="popular-stocks-table">
-			<tr id="all-table-headers">
-				<th className="table-headers" id="table-symbol">Symbol</th>
-				<th className="table-headers" id="table-price">Market Price</th>
-				<th className="table-headers" id="table-change">Market Change</th>
-				<th className="table-headers" id="table-open">Market Open</th>
-				<th className="table-headers" id="table-high">Day High</th>
-				<th className="table-headers" id="table-low">Day Low</th>
-				<th className="table-headers" id="table-close">Previous Close</th>
-			</tr>
-			<tbody>
-				{this.props.stocksData}
-			</tbody>
+				<thead>
+					<tr id="all-table-headers">
+						<th className="table-headers" id="table-symbol">Symbol</th>
+						<th className="table-headers" id="table-price">Market Price</th>
+						<th className="table-headers" id="table-change">Market Change</th>
+						<th className="table-headers" id="table-open">Market Open</th>
+						<th className="table-headers" id="table-high">Day High</th>
+						<th className="table-headers" id="table-low">Day Low</th>
+						<th className="table-headers" id="table-close">Previous Close</th>
+					</tr>
+				</thead>
+				<tbody>
+					{this.props.stocksData}
+				</tbody>
 			</table>
 		)
 	}

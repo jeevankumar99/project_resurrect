@@ -25,6 +25,9 @@ def login_view(request):
             })
     return render(request, "stock/login.html")
 
+def profile_view(request):
+    return render(request, "stock/profile.html")
+
 def register_view(request):
     if request.method == "POST":
         username = request.POST["username"]

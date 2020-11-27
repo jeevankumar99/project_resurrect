@@ -9,6 +9,7 @@ body {
  
 .body {
      margin: 10px;
+     margin-top: 70px;
  }
 
 /* top nav bar */
@@ -16,7 +17,6 @@ body {
 #top-nav-bar {
     display: flex;
     background-color: rgb(73, 73, 73);
-    padding: 2px;
     width: 100%;
     box-shadow: 1px 1px 6px black;
     margin-top: -70px;
@@ -25,20 +25,25 @@ body {
 
 .top-bar-link {
     display: inline;
-    padding: 0px 4px 0px 4px;
+    padding: 4px 8px 4px 8px;
     vertical-align: middle;
     margin: 10px;
     font-size: large;
+    color: white;
+    text-decoration: none;
+}
+
+.top-bar-link:hover {
+    background-color: gray;
+    border-radius: 20px;
+    cursor: pointer;
 }
 
 #top-bar-profile, #top-bar-login {
     margin-left: auto;
 }
 
-#top-bar-login, #top-bar-logout {
-    color: white;
-    text-decoration: none;
-}
+
 
 
 /* ---index.html--- */
@@ -81,6 +86,10 @@ body {
     color: rgb(158, 158, 158);
 }
 
+#BSE-symbol:hover, #NSE-symbol:hover {
+    cursor: pointer;
+    color: rgb(223, 223, 223);
+}
 
 /* Popular stocks table */
 
@@ -114,10 +123,16 @@ body {
     height: 30px;
 }
 
+.table-row-data:hover {
+    cursor: pointer;
+    background-color: rgb(56, 56, 56);
+}
+
 #table-symbol {
     text-align: left;
     font-size: large;
 }
+
 .table-price, .table-change, .table-open, .table-high, .table-low, .table-close {
     text-align: center;
 }
@@ -127,6 +142,11 @@ body {
     table-layout: auto;
     width: 100%;
     border-collapse: collapse;
+}
+
+.watchlist-button {
+    margin-left: auto;
+    width: 50px;
 }
 
 /* scrollbar of popular stocks */
