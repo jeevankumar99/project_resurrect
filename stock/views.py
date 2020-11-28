@@ -11,19 +11,24 @@ from .models import *
 
 # Create your views here.
 
-# CSRF IS EXEMPTED ---NOT SECURE--- CORRECT IT!
 @login_required(login_url='/login')
-@csrf_exempt
-def add_watchlist(request):
+def watchlist_handler(request, symbol):
+    user = User.objects.get(username=request.user)
     if request.method == 'POST':
         data = json.loads(request.body)
         stock_symbol = data.get("stockSymbol")
-        user = User.objects.get(username=request.user)
         Watchlist.objects.create(user=user, stock_symbol=stock_symbol)
         print("Watchlist Updated backend!")
         return JsonResponse({"message": "Added to watchlist!"}, status=201)
-    else:
-        return JsonResponse({"error": "request has to be POST"}, status=400)
+    elif request.method == 'GET':
+        stock_symbol = symbol
+        try:
+            watchlist = Watchlist.objects.get(user=user, stock_symbol=stock_symbol)
+        except Watchlist.DoesNotExist:
+            return JsonResponse({'watching': False}, status=200)
+        return JsonResponse({'watching': True}, status=200)
+    else: 
+        return JsonResponse({"error": "GET or POST required"}, status=400)
         
 
 def index(request):

@@ -7,5 +7,5 @@ urlpatterns = [
     path('register', views.register_view, name="register"),
     path('logout', views.logout_view, name="logout"),
     path('my_profile', views.profile_view, name="profile"),
-    path('add_watchlist', views.add_watchlist, name="add_watchlist"),
+    path('watchlist_handler/<str:symbol>', views.watchlist_handler, name="watchlist_handler"),
 ]

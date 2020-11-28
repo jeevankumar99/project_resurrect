@@ -69,7 +69,8 @@ class PopularStockData extends React.Component {
 			marketOpen: this.props.stock.regularMarketOpen,
 			dayHigh: this.props.stock.regularMarketDayHigh,
 			dayLow: this.props.stock.regularMarketDayLow,
-			previousClose: this.props.stock.regularMarketPreviousClose
+			previousClose: this.props.stock.regularMarketPreviousClose,
+			watchlistButtonText: this.props.stock.watchListButton
 		}
 
 		// To change the color depending on rise and fall of price.
@@ -81,15 +82,17 @@ class PopularStockData extends React.Component {
 		}
 	}
 
-	// PASS CSRF COOKIES ---NOT SECURE---
+	// Add the selected stock to watchlist
 	addToWatchlist = function(event) {
 		event.stopPropagation();
 		console.log("Added to watchlist dummy!")
-		fetch("/add_watchlist", {
+		let csrf_token = getCookie('csrftoken')
+		fetch("/watchlist_handler", {
 			method: "POST", 
 			body: JSON.stringify({
 				stockSymbol: this.state.symbol
 			}),
+			headers: {'X-CSRFToken': csrf_token}
 		})
 		console.log("request sent!")
 	}
@@ -99,7 +102,9 @@ class PopularStockData extends React.Component {
 			<tr onClick={() => window.location.href = `stock/${this.state.symbol}`} className="table-row-data">
 				<td className="table-data" className="table-symbol">
 					{this.state.symbol}
-					<button onClick={event => this.addToWatchlist(event)} className="watchlist-button">Watch</button>
+				</td>
+				<td className="table-data" className="table-watchlist">
+					<button onClick={event => this.addToWatchlist(event)} className="watchlist-button">{this.state.watchlistButtonText}</button>
 				</td>
 				<td className="table-data" className="table-price"><font color={this.priceColor}>$ {this.state.price}</font></td>
 				<td className="table-data" className="table-change">$ {this.state.marketChange} / {this.state.marketChangePercent} %</td>
@@ -122,6 +127,7 @@ class PopularStockTable extends React.Component {
 				<thead>
 					<tr id="all-table-headers">
 						<th className="table-headers" id="table-symbol">Symbol</th>
+						<th className="table-headers" id="table-watchlist"></th>
 						<th className="table-headers" id="table-price">Market Price</th>
 						<th className="table-headers" id="table-change">Market Change</th>
 						<th className="table-headers" id="table-open">Market Open</th>
@@ -216,9 +222,30 @@ else {
 	// render tables with the data.
 	let popularStockList = []
 	popularStocks.finance.result[0].quotes.forEach(stock => {
-		popularStockList.push(<PopularStockData key={stock.symbol} stock={stock}/>)
+		fetch(`/watchlist_handler/${stock.symbol}`)
+		.then(response => response.json())
+		.then(data => {
+			(data.watching) ? (stock.watchListButton = "watching") :(stock.watchListButton = "watch");
+			popularStockList.push(<PopularStockData key={stock.symbol} stock={stock}/>)
+			ReactDOM.render(<PopularStockTable stocksData={popularStockList}/>, document.querySelector('#popular-stocks'));
+		})
 	})
-	ReactDOM.render(<PopularStockTable stocksData={popularStockList}/>, document.querySelector('#popular-stocks'));
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
 }
 
 
