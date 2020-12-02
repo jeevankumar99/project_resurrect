@@ -12,21 +12,44 @@ from .models import *
 # Create your views here.
 
 @login_required(login_url='/login')
-def watchlist_handler(request, symbol):
+def watchlist_handler(request, symbol=None):
     user = User.objects.get(username=request.user)
+    
+    # Add or remove stock from watchlists
     if request.method == 'POST':
         data = json.loads(request.body)
         stock_symbol = data.get("stockSymbol")
-        Watchlist.objects.create(user=user, stock_symbol=stock_symbol)
-        print("Watchlist Updated backend!")
-        return JsonResponse({"message": "Added to watchlist!"}, status=201)
+        action = data.get("action")
+       
+       # Add the stock to user's watchlist
+        if action == "add":
+            Watchlist.objects.create(user=user, stock_symbol=stock_symbol)
+            print ("watchlist added!")
+        # Remove the stock from user's watchlist
+        else:
+            try:
+                Watchlist.objects.get(user=user, stock_symbol=stock_symbol).delete()
+            except Watchlist.DoesNotExist:
+                print("watchlist removed!")
+                return JsonResponse({"error": "Stock not in user's watchlist"}, status=400)            
+        
+        return JsonResponse({"message": "Backend updated!"}, status=201)
+
+    # Check if stock is already i user's watchlist
     elif request.method == 'GET':
         stock_symbol = symbol
+        
+        # Stock present in watchlist
         try:
-            watchlist = Watchlist.objects.get(user=user, stock_symbol=stock_symbol)
+            Watchlist.objects.get(user=user, stock_symbol=stock_symbol)
+        
+        # Stock not present in watchlist
         except Watchlist.DoesNotExist:
             return JsonResponse({'watching': False}, status=200)
+        
         return JsonResponse({'watching': True}, status=200)
+    
+    # Invalid request
     else: 
         return JsonResponse({"error": "GET or POST required"}, status=400)
         

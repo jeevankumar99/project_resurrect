@@ -70,7 +70,7 @@ class PopularStockData extends React.Component {
 			dayHigh: this.props.stock.regularMarketDayHigh,
 			dayLow: this.props.stock.regularMarketDayLow,
 			previousClose: this.props.stock.regularMarketPreviousClose,
-			watchlistButtonText: this.props.stock.watchListButton
+			watchlistButtonText: null,
 		}
 
 		// To change the color depending on rise and fall of price.
@@ -80,20 +80,69 @@ class PopularStockData extends React.Component {
 		else {
 			this.priceColor = "red";
 		}
+		
+		// Check if user is logged in.
+		this.userLoggedIn = document.querySelector('#user-logged-in').innerHTML;
+	}
+
+	componentDidMount() {
+		
+		// Get watchlist data only if user is logged in
+		if (this.userLoggedIn === "true") {
+			fetch(`watchlist_handler/${this.state.symbol}`)
+			.then(response => response.json())
+			.then(data => {
+				let buttonState
+				(data.watching) ? (buttonState = "Unwatch") : (buttonState = "Watch");
+				this.setState(()=> ({
+					watchlistButtonText: buttonState
+				}));
+			})
+		}
+
+		// Else just display initiale button state.
+		else {
+			this.setState(() => ({
+				watchlistButtonText: "watch"
+			}));
+		}
 	}
 
 	// Add the selected stock to watchlist
-	addToWatchlist = function(event) {
+	toggleWatchlist = function(event) {
 		event.stopPropagation();
-		console.log("Added to watchlist dummy!")
+
+		// If button clicked and user not logged in, redirect to login page.
+		if (this.userLoggedIn === "false") {
+			window.location.replace("/login")
+		}
+
+		// Handle toggle when user is logged in.
+		let action, newButtonState;
+		if (this.state.watchlistButtonText === "Watch") {
+			action = "add";
+			newButtonState = "Unwatch";
+		}
+		else {
+			action = "remove";
+			newButtonState = "Watch"
+		}
+
+		// Get CSRF token from cookies for POST request
 		let csrf_token = getCookie('csrftoken')
 		fetch("/watchlist_handler", {
 			method: "POST", 
 			body: JSON.stringify({
-				stockSymbol: this.state.symbol
+				stockSymbol: this.state.symbol,
+				action: action,
 			}),
 			headers: {'X-CSRFToken': csrf_token}
 		})
+
+		// Change state
+		this.setState(state => ({
+			watchlistButtonText: newButtonState
+		}));
 		console.log("request sent!")
 	}
 
@@ -104,7 +153,7 @@ class PopularStockData extends React.Component {
 					{this.state.symbol}
 				</td>
 				<td className="table-data" className="table-watchlist">
-					<button onClick={event => this.addToWatchlist(event)} className="watchlist-button">{this.state.watchlistButtonText}</button>
+					<button onClick={event => this.toggleWatchlist(event)} className="watchlist-button">{this.state.watchlistButtonText}</button>
 				</td>
 				<td className="table-data" className="table-price"><font color={this.priceColor}>$ {this.state.price}</font></td>
 				<td className="table-data" className="table-change">$ {this.state.marketChange} / {this.state.marketChangePercent} %</td>
@@ -120,7 +169,6 @@ class PopularStockData extends React.Component {
 
 // For headers. Static data as of now, we'll update after we get unlimited API requests
 class PopularStockTable extends React.Component {
-	
 	render() {
 		return (
 			<table id="popular-stocks-table">
@@ -147,21 +195,28 @@ class PopularStockTable extends React.Component {
 // To request the Stock's data only once to keep within the request limit
 if (!localStorage.getItem('indexStocks')) {
 	fetch("https://yahoo-finance-low-latency.p.rapidapi.com/v6/finance/quote/marketSummary?lang=en&region=IN", {
-	"method": "GET",
-	"headers": {
-		"x-rapidapi-key": "479462f012mshe76e1e5aaa27ccdp1567d6jsnd0b820804b3b",
-		"x-rapidapi-host": "yahoo-finance-low-latency.p.rapidapi.com"
-	}
-})
-.then(response => response.json())
-.then(data => {
-	console.log(data)	
-	// Store the retrieved data locally in the browser.
-	localStorage.setItem('indexStocks', JSON.stringify(data));
-})
-.catch(err => {
-	console.error(err);
-});
+		"method": "GET",
+		"headers": {
+			"x-rapidapi-key": "479462f012mshe76e1e5aaa27ccdp1567d6jsnd0b820804b3b",
+			"x-rapidapi-host": "yahoo-finance-low-latency.p.rapidapi.com"
+		}
+	})
+	.then(response => response.json())
+	.then(data => {
+		console.log(data)	
+		// Store the retrieved data locally in the browser.
+		localStorage.setItem('indexStocks', JSON.stringify(data));
+		// Render the BSE and NSE indexes, no realtime data added yet.
+		ReactDOM.render(
+			<IndexStocks 
+				BSEdata={data.marketSummaryResponse.result[0]}
+				NSEdata={data.marketSummaryResponse.result[1]}
+			/>, document.querySelector('#main-indexes'));
+		console.log(data.marketSummaryResponse.result[0]);
+	})
+	.catch(err => {
+		console.error(err);
+	});
 }
 
 // If data is already stored locally, take it from there.
@@ -169,13 +224,13 @@ else {
 	let indexStocks = localStorage.getItem('indexStocks');
 	indexStocks = JSON.parse(indexStocks);
 	// Render the BSE and NSE indexes, no realtime data added yet.
-ReactDOM.render(
-	<IndexStocks 
-		BSEdata={indexStocks.marketSummaryResponse.result[0]}
-		NSEdata={indexStocks.marketSummaryResponse.result[1]}
-	/>, document.querySelector('#main-indexes'));
-	console.log(indexStocks.marketSummaryResponse.result[0]);
-}
+	ReactDOM.render(
+		<IndexStocks 
+			BSEdata={indexStocks.marketSummaryResponse.result[0]}
+			NSEdata={indexStocks.marketSummaryResponse.result[1]}
+		/>, document.querySelector('#main-indexes'));
+		console.log(indexStocks.marketSummaryResponse.result[0]);
+	}
 
 
 // Same as above, retieve data only once.
@@ -193,6 +248,8 @@ if (!localStorage.getItem('popularStocks')) {
 	
 	// Process the received data
 	.then(data => {
+
+		console.log("Using new data")
 		
 		// convert json to string to store locally.
 		localStorage.setItem('popularStocks', JSON.stringify(data));
@@ -201,10 +258,9 @@ if (!localStorage.getItem('popularStocks')) {
 		// render tables with data.
 		let popularStockList = []
 		data.finance.result[0].quotes.forEach(stock => {
-		popularStockList.push(<PopularStockData key={stock.symbol} stock={stock}/>)
-	})
-
-	ReactDOM.render(<PopularStockTable stocksData={popularStockList}/>, document.querySelector('#popular-stocks'));
+			popularStockList.push(<PopularStockData key={stock.symbol} stock={stock}/>)
+		})
+		ReactDOM.render(<PopularStockTable stocksData={popularStockList}/>, document.querySelector('#popular-stocks'));
 	})
 	.catch(err => {
 		console.error(err);
@@ -213,6 +269,7 @@ if (!localStorage.getItem('popularStocks')) {
 
 // Same as above, use local data if avaiable.
 else {
+	console.log("using old data")
 	let popularStocks = localStorage.getItem('popularStocks');
 	
 	// parse the locally stored stringified data to json
@@ -222,14 +279,11 @@ else {
 	// render tables with the data.
 	let popularStockList = []
 	popularStocks.finance.result[0].quotes.forEach(stock => {
-		fetch(`/watchlist_handler/${stock.symbol}`)
-		.then(response => response.json())
-		.then(data => {
-			(data.watching) ? (stock.watchListButton = "watching") :(stock.watchListButton = "watch");
-			popularStockList.push(<PopularStockData key={stock.symbol} stock={stock}/>)
-			ReactDOM.render(<PopularStockTable stocksData={popularStockList}/>, document.querySelector('#popular-stocks'));
-		})
+		popularStockList.push(<PopularStockData key={stock.symbol} stock={stock}/>)
 	})
+
+	ReactDOM.render(<PopularStockTable stocksData={popularStockList} />, document.querySelector('#popular-stocks'))
+
 }
 
 function getCookie(name) {
