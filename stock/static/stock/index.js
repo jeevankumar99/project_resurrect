@@ -28,6 +28,12 @@ class IndexStocks extends React.Component {
 		(this.state.NSEmarketChange < 0) ? (this.NSEpriceColor = "red") : (this.NSEpriceColor = "green");
 		(this.state.NSEmarketPreviousClose > this.state.NSEmarketPrice) ? (this.NSEprevColor = "rgb(0, 88, 0)") : (this.NSEprevColor = "rgb(146, 1, 1)");
 		(this.state.BSEmarketPreviousClose > this.state.BSEmarketPrice) ? (this.BSEprevColor = "rgb(0, 88, 0)") : (this.BSEprevColor = "rgb(146, 1, 1)");
+		if (window.innerWidth > 1600) {
+			this.desktopSite = true
+		}
+		else {
+			this.desktopSite = false
+		}
 	}
 	render () {
 		return (
@@ -36,20 +42,28 @@ class IndexStocks extends React.Component {
 				<tr className="big-row">
 					<td onClick={() => window.location.href = 'stock/BSE'} id="BSE-symbol">{this.state.BSEsymbol}</td>
 					<td id="BSE-market-price">{this.state.BSEmarketPrice}</td>
-					<td id="BSE-market-close" style={{color: this.BSEprevColor}}>{this.state.BSEmarketPreviousClose}</td>
+					{ (this.desktopSite) ? 
+						(<td id="BSE-market-close" style={{color: this.BSEprevColor}}>{this.state.BSEmarketPreviousClose}</td>)
+						: (null)}
 					<td onClick={() => window.location.href = 'stock/NSE'} id="NSE-symbol">{this.state.NSEsymbol}</td>
 					<td id="NSE-market-price">{this.state.NSEmarketPrice}</td>
-					<td id="NSE-market-close" style={{color: this.NSEprevColor}}>{this.state.NSEmarketPreviousClose}</td>
+					{ (this.desktopSite) ? 
+						(<td id="NSE-market-close" style={{color: this.NSEprevColor}}>{this.state.NSEmarketPreviousClose}</td>)
+						: (null)}
 				</tr>
 				</thead>
 				<tbody>
 				<tr className="small-row">
 					<td id="BSE-lower-symbol">{this.state.BSEquoteType} | {this.state.BSEexchangeTimezoneShortName}</td>
 					<td id="BSE-market-change"><font color={this.BSEpriceColor}>{this.state.BSEmarketChange} ({this.state.BSEmarketChangePercent})</font></td>
-					<td id="BSE-lower-close">Previous market close</td>
+					{ (this.desktopSite) ? 
+						(<td id="BSE-lower-close">Previous market close</td>)
+						: (null)}
 					<td id="NSE-lower-symbol">{this.state.NSEquoteType} | {this.state.NSEexchangeTimezoneShortName}</td>
 					<td id="NSE-market-change"><font color={this.NSEpriceColor}>{this.state.NSEmarketChange} ({this.state.NSEmarketChangePercent})</font></td>
-					<td id="NSE-lower-close">Previous market close</td>
+					{ (this.desktopSite) ? 
+						(<td id="NSE-lower-close">Previous market close</td>)
+						: (null)}
 				</tr>
 				</tbody>
 			</table>
