@@ -1,0 +1,12 @@
+{% extends "stock/layout.html" %}
+
+{% load static %}
+
+{% block script %}
+    <script type="text/babel" src="{% static 'stock/watchlist.js' %}"></script>
+{% endblock %}
+
+{% block body %}
+    <h1>My watchlists</h1>
+    <div id="watchlist-stocks"></div>
+{% endblock %}  

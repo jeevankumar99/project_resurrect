@@ -7,7 +7,9 @@ urlpatterns = [
     path('login', views.login_view, name="login"),
     path('register', views.register_view, name="register"),
     path('logout', views.logout_view, name="logout"),
-    path('my_profile', views.profile_view, name="profile"),
+    path('my_profile', views.profile_view, name="my_profile"),
     path('watchlist_handler', views.watchlist_handler, name="watchlist_handler_add"),
     path('watchlist_handler/<str:symbol>', views.watchlist_handler, name="watchlist_handler_get"),
+    path('my_watchlist', views.watchlist_view, name="my_watchlist"),
+    path('get_watchlist', views.get_watchlist, name='get_watchlist')
 ]

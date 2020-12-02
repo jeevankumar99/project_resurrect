@@ -12,3 +12,9 @@ class Watchlist(models.Model):
 
     def __str__(self):
         return (f'{self.user.username}-{self.stock_symbol}')
+
+    def serialize(self):
+        return {
+            'symbol': self.stock_symbol,
+            'timestamp': self.timestamp.strftime("%d/%m/%y %H:%M")
+        }

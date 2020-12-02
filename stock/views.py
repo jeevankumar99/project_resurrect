@@ -53,6 +53,14 @@ def watchlist_handler(request, symbol=None):
     else: 
         return JsonResponse({"error": "GET or POST required"}, status=400)
         
+def get_watchlist(request):
+    user = User.objects.get(username=request.user)
+    watching_stocks = Watchlist.objects.filter(user=user)
+    serialized_watchlist = [stock.serialize() for stock in watching_stocks]
+    return JsonResponse(serialized_watchlist, safe=False)
+
+def watchlist_view(request):
+    return render(request, "stock/watchlist.html")
 
 def index(request):
     return render(request, "stock/index.html")
