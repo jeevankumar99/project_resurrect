@@ -5,7 +5,6 @@ class TestComponent extends React.Component {
         return (
             <div>
                 <h1>Hello!</h1>
-                <PopularStockData />
             </div>
         )
     }
