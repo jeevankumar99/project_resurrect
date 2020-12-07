@@ -86,7 +86,6 @@ else {
 	// render tables with the data.
 	let popularStockList = []
 	popularStocks.finance.result[0].quotes.forEach(stock => {
-		setTimeout(() => {stock.regularMarketPrice = stock.regularMarketPrice + 1});
 		popularStockList.push(<PopularStockData key={stock.symbol} stock={stock}/>)
 	})
 
