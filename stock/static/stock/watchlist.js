@@ -1,3 +1,19 @@
+
+
+class TestComponent extends React.Component {
+    render() {
+        return (
+            <div>
+                <h1>Hello!</h1>
+                <PopularStockData />
+            </div>
+        )
+    }
+}
+
+ReactDOM.render(<TestComponent />, document.querySelector('#test-stocks'))
+
+
 fetch('/get_watchlist')
 .then(response => response.json())
 .then(data => {
