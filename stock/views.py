@@ -59,6 +59,7 @@ def get_watchlist(request):
     serialized_watchlist = [stock.serialize() for stock in watching_stocks]
     return JsonResponse(serialized_watchlist, safe=False)
 
+@login_required(login_url='/login')
 def watchlist_view(request):
     return render(request, "stock/watchlist.html")
 
