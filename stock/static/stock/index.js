@@ -65,7 +65,8 @@ if (!localStorage.getItem('popularStocks')) {
 		// render tables with data.
 		let popularStockList = []
 		data.finance.result[0].quotes.forEach(stock => {
-			popularStockList.push(<PopularStockData key={stock.symbol} stock={stock}/>)
+			stock.isWatchlistPage = false;
+			popularStockList.push(stock)
 		})
 		ReactDOM.render(<PopularStockTable stocksData={popularStockList}/>, document.querySelector('#popular-stocks'));
 	})
@@ -86,7 +87,7 @@ else {
 	// render tables with the data.
 	let popularStockList = []
 	popularStocks.finance.result[0].quotes.forEach(stock => {
-		popularStockList.push(<PopularStockData key={stock.symbol} stock={stock}/>)
+		popularStockList.push(stock)
 	})
 
 	ReactDOM.render(<PopularStockTable stocksData={popularStockList} />, document.querySelector('#popular-stocks'))

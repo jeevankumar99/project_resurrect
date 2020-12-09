@@ -82,6 +82,7 @@ class PopularStockData extends React.Component {
 			dayHigh: this.props.stock.regularMarketDayHigh,
 			dayLow: this.props.stock.regularMarketDayLow,
 			previousClose: this.props.stock.regularMarketPreviousClose,
+			isWatchlistPage: this.props.stock.isWatchlistPage,
 			watchlistButtonText: null,
 		}
 
@@ -118,11 +119,13 @@ class PopularStockData extends React.Component {
 				watchlistButtonText: "watch"
 			}));
 		}
+
 	}
 
 	// Add the selected stock to watchlist
 	toggleWatchlist = function(event) {
 		event.stopPropagation();
+
 
 		// If button clicked and user not logged in, redirect to login page.
 		if (this.userLoggedIn === "false") {
@@ -138,6 +141,10 @@ class PopularStockData extends React.Component {
 		else {
 			action = "remove";
 			newButtonState = "Watch"
+		}
+
+		if (this.state.isWatchlistPage) {
+			this.props.clickHandler(this.state.symbol);
 		}
 
 		// Get CSRF token from cookies for POST request
@@ -160,7 +167,7 @@ class PopularStockData extends React.Component {
 
 	render () {
 		return (
-			<tr onClick={() => window.location.href = `stock/${this.state.symbol}`} className="table-row-data">
+			<tr onClick={() => window.location.href = `stock/${this.state.symbol}`} className="table-row-data" id={`table-row-${this.state.symbol}`}>
 				<td className="table-data" className="table-symbol">
 					{this.state.symbol}
 				</td>
@@ -181,7 +188,40 @@ class PopularStockData extends React.Component {
 
 // For headers. Static data as of now, we'll update after we get unlimited API requests
 class PopularStockTable extends React.Component {
+	constructor(props) {
+		super(props);
+		this.stocksData = []
+		this.props.stocksData.forEach(stock => {
+			this.stocksData.push(<PopularStockData 
+				key={stock.symbol} 
+				stock={stock}
+				clickHandler={this.removeRow} />)
+		})
+		console.log(this.stocksData)
+		this.state = {
+			stocksData: this.stocksData
+		}
+	}
+
+	removeRow = (symbol) => {
+		// let popIndex, stockComponent, index=0;
+		// for (stockComponent of this.state.stocksData) {
+		// 	index++;
+		// 	if (stockComponent.key === symbol) {
+		// 		console.log(stockComponent, symbol)
+		// 		popIndex = index;
+		// 		break;
+		// 	}
+		// }
+
+		let filtered = this.state.stocksData.filter(stockComponent => stockComponent.key !== symbol);
+		this.setState(state => ({
+			stocksData: filtered
+		}))
+	}
+
 	render() {
+		console.log(this.state.stocksData)
 		return (
 			<table id="popular-stocks-table">
 				<thead>
@@ -197,7 +237,7 @@ class PopularStockTable extends React.Component {
 					</tr>
 				</thead>
 				<tbody>
-					{this.props.stocksData}
+					{this.state.stocksData}
 				</tbody>
 			</table>
 		)
