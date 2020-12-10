@@ -1,4 +1,6 @@
 
+ ReactDOM.render(<Autocomplete />, document.querySelector('#top-bar-search-div'))
+
 // To request the Stock's data only once to keep within the request limit
 if (!localStorage.getItem('indexStocks')) {
 	fetch("https://yahoo-finance-low-latency.p.rapidapi.com/v6/finance/quote/marketSummary?lang=en&region=IN", {

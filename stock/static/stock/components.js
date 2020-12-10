@@ -1,3 +1,47 @@
+ class Autocomplete extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			suggestions: null
+		}
+	}
+	handleChange = (event) => {
+		console.log(String(event.target.value))
+		let keyword = String(event.target.value)
+		let stockList = [];
+		fetch(`https://apidojo-yahoo-finance-v1.p.rapidapi.com/auto-complete?q=${keyword}&region=US`, {
+			"method": "GET",
+			"headers": {
+				"x-rapidapi-key": "479462f012mshe76e1e5aaa27ccdp1567d6jsnd0b820804b3b",
+				"x-rapidapi-host": "apidojo-yahoo-finance-v1.p.rapidapi.com"
+			}
+		})
+		.then(response => response.json())
+		.then(data => {
+			console.log(data);
+			data.quotes.forEach(stock => {
+				let para = (<p key={stock.symbol}>{stock.symbol}, {stock.longName}</p>)
+				stockList.push(para)
+			})
+			this.setState(state => ({
+				suggestions: stockList
+			}))
+		})
+		.catch(err => {
+			console.error(err);
+		});
+	}
+	 render() {
+		 return (
+			 <div id="top-bar-search">
+			<input onChange={event => this.handleChange(event)} class="search-components" id="top-bar-search-bar" type="text" placeholder="Search"/>
+				<button class="search-components" id="top-bar-search-button">Icon</button>
+				<div id="search-suggestions">{this.state.suggestions}</div>
+			</div>
+		 )
+	 }
+ }
+
 class IndexStocks extends React.Component {
 	constructor(props) {
 		super(props);
@@ -203,17 +247,8 @@ class PopularStockTable extends React.Component {
 		}
 	}
 
+	// Removes stock from watchlist table.
 	removeRow = (symbol) => {
-		// let popIndex, stockComponent, index=0;
-		// for (stockComponent of this.state.stocksData) {
-		// 	index++;
-		// 	if (stockComponent.key === symbol) {
-		// 		console.log(stockComponent, symbol)
-		// 		popIndex = index;
-		// 		break;
-		// 	}
-		// }
-
 		let filtered = this.state.stocksData.filter(stockComponent => stockComponent.key !== symbol);
 		this.setState(state => ({
 			stocksData: filtered

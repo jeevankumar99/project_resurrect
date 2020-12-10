@@ -4,7 +4,7 @@
 body {
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     margin: 0px;
-    background-color: rgb(24, 24, 24);
+    background-color: rgb(18, 18, 18);
     color: white;
 }
  
@@ -43,13 +43,17 @@ body {
 }
 
 #top-bar-search {
-    margin: 12px auto 0px auto;
-    width: 40%;
-    height: 35px;
+    width: 100%;
     display: flex;
+    height: 35px;
     border-radius: 8px;
     background-color: rgb(20, 20, 20);
     border: 1px solid rgb(64, 64, 64);
+}
+
+#top-bar-search-div {
+    width: 40%;
+    margin: 12px auto 0px auto;
 }
 
 #top-bar-search-bar {
@@ -73,6 +77,10 @@ body {
     background-color: rgb(70, 70, 70);
 }
 
+#search-suggestions {
+    position: block;
+    background-color: black;
+}
 
 #top-bar-profile, #top-bar-login {
     margin-left: auto;
@@ -135,6 +143,7 @@ body {
     margin: 30px auto 10px auto;
     width: 70%;
     border-radius: 10px;
+    background-color: rgb(22, 22, 22);
     box-shadow: 1px 1px 10px black;
 }
 
