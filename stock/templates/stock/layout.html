@@ -17,7 +17,11 @@
             <div class="top-bar-link" id="brand-title">Stocks</div>
             <a class="top-bar-link" id="top-bar-home" href="{% url 'index' %}">Home</a>
             <a class="top-bar-link" id="top-bar-watchlist" href="{% url 'my_watchlist' %}">Watchlist</a>
-            <div class="top-bar-link" id="top-bar-search">Search</div>
+            <div id="top-bar-search">
+                <input class="search-components" id="top-bar-search-bar" type="text" placeholder="Search">
+                    <button class="search-components" id="top-bar-search-button">Icon</button>
+                </input>
+            </div>
             {% if user.is_authenticated %}
                 <a class="top-bar-link" id="top-bar-profile" href="{% url 'my_profile' %}">{{ user }}</a>
                 <a class="top-bar-link" id="top-bar-logout" href="{% url 'logout' %}">Logout</a>

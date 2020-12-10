@@ -223,11 +223,11 @@ class PopularStockTable extends React.Component {
 	render() {
 		console.log(this.state.stocksData)
 		return (
-			<table id="popular-stocks-table">
+			<table className="popular-stocks-table">
 				<thead>
 					<tr id="all-table-headers">
 						<th className="table-headers" id="table-symbol">Symbol</th>
-						<th className="table-headers" id="table-watchlist"></th>
+						<th className="table-headers" id="table-watchlist">Watchlist</th>
 						<th className="table-headers" id="table-price">Market Price</th>
 						<th className="table-headers" id="table-change">Market Change</th>
 						<th className="table-headers" id="table-open">Market Open</th>

@@ -2,8 +2,9 @@
 /* ---layout.html--- */
 
 body {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     margin: 0px;
-    background-color: rgb(46, 46, 46);
+    background-color: rgb(24, 24, 24);
     color: white;
 }
  
@@ -16,16 +17,18 @@ body {
 
 #top-nav-bar {
     display: flex;
-    background-color: rgb(73, 73, 73);
+    background-color: rgb(32, 32, 32);
     width: 100%;
-    box-shadow: 1px 1px 6px black;
-    margin-top: -70px;
+    height: 60px;
+    font-weight: bold;
+    border-bottom: 1px solid rgb(70, 70, 70);
+    margin-top: -80px;
     position: fixed;
 }
 
 .top-bar-link {
     display: inline;
-    padding: 4px 8px 4px 8px;
+    padding: 8px;
     vertical-align: middle;
     margin: 10px;
     font-size: large;
@@ -33,11 +36,43 @@ body {
     text-decoration: none;
 }
 
-.top-bar-link:hover {
-    background-color: gray;
+.top-bar-link:not(#top-bar-search):hover {
+    background-color: rgb(60, 60, 60);
     border-radius: 20px;
     cursor: pointer;
 }
+
+#top-bar-search {
+    margin: 12px auto 0px auto;
+    width: 40%;
+    height: 35px;
+    display: flex;
+    border-radius: 8px;
+    background-color: rgb(20, 20, 20);
+    border: 1px solid rgb(64, 64, 64);
+}
+
+#top-bar-search-bar {
+    width: 100%;
+    padding-left: 6px;
+    margin: 2px;
+    border: 0px;
+    color: white;
+    background-color: rgb(20, 20, 20);
+}
+
+#top-bar-search-bar:focus {
+    outline: none;
+}
+
+#top-bar-search-button {
+    height: 35px;
+    border-radius: 0px 7px 7px 0px;
+    color: white;
+    border: 0px;
+    background-color: rgb(70, 70, 70);
+}
+
 
 #top-bar-profile, #top-bar-login {
     margin-left: auto;
@@ -53,7 +88,8 @@ body {
 #main-indexes {
     display: flex;
     width: 70%;
-    margin: 70px auto 0px auto;
+    background-color: rgb(46, 46, 46);
+    margin: 80px auto 0px auto;
     border-radius: 10px;
     box-shadow: 1px 1px 10px black;
 }
@@ -95,14 +131,13 @@ body {
 
 #popular-stocks {
     display: flex;
+    bottom: 0px;
     margin: 30px auto 10px auto;
     width: 70%;
-    height: 77vh;
     border-radius: 10px;
     box-shadow: 1px 1px 10px black;
-    overflow-y: scroll;
-    overflow-x: hidden;
 }
+
 
 #all-table-headers {
     border-bottom: 1px solid rgb(160, 160, 160);
@@ -118,8 +153,9 @@ body {
     color: green;
 }
 
+
 .table-row-data {
-    border-bottom: 1px solid rgb(160, 160, 160);
+    border-bottom: 1px solid rgb(90, 90, 90);
     height: 30px;
 }
 
@@ -137,7 +173,7 @@ body {
     text-align: center;
 }
 
-#popular-stocks-table {
+.popular-stocks-table {
     margin: 10px;
     table-layout: auto;
     width: 100%;
