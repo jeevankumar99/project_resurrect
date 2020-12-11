@@ -1,0 +1,11 @@
+{% extends "stock/layout.html" %}
+
+{%load static %}
+
+{%block script %}{% endblock %}
+
+{% block body %}
+    <h3>{{ stock_symbol }}</h3>
+    <div id="stock-symbol"></div>
+    <div id="stock-chart"></div>
+{% endblock %}

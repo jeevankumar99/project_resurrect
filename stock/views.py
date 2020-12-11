@@ -107,6 +107,11 @@ def register_view(request):
 
     return render(request, "stock/register.html")
 
+def stock_view(request, symbol):
+    return render(request, "stock/individual_stock.html", {
+        'stock_symbol': symbol
+    })
+
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse("index"))

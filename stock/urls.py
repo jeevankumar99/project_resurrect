@@ -11,5 +11,6 @@ urlpatterns = [
     path('watchlist_handler', views.watchlist_handler, name="watchlist_handler_add"),
     path('watchlist_handler/<str:symbol>', views.watchlist_handler, name="watchlist_handler_get"),
     path('my_watchlist', views.watchlist_view, name="my_watchlist"),
-    path('get_watchlist', views.get_watchlist, name='get_watchlist')
+    path('get_watchlist', views.get_watchlist, name="get_watchlist"),
+    path('stock/<str:symbol>', views.stock_view, name="stock_view")
 ]
