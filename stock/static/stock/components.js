@@ -27,7 +27,11 @@ class Autocomplete extends React.Component {
 				let new_keyword = document.querySelector(`#${elementID}`).value;
 				if (new_keyword !== '') {
 					data.quotes.forEach(stock => {
-						let para = (<p key={stock.symbol}>{stock.symbol} - {stock.longname}</p>)
+						let para = (<a key={stock.symbol} className="search-suggestion-links" href={`stock/${stock.symbol}`}>
+							<div className="search-suggestion-link-div">
+								{stock.symbol}  -  <font className="search-stock-longname">{stock.longname}</font>
+							</div>
+						</a>)
 						stockList.push(para)
 					})
 					this.setState(() => ({
@@ -43,9 +47,11 @@ class Autocomplete extends React.Component {
 	}
 
 	handleFocusOut = () => {
-		this.setState(() => ({
-			suggestions: null
-		}))
+		setTimeout(() => {
+			this.setState(() => ({
+				suggestions: null
+			}))
+		}, 200)
 	}
 
 	 render() {

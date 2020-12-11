@@ -42,6 +42,14 @@ body {
     cursor: pointer;
 }
 
+#top-bar-profile, #top-bar-login {
+    margin-left: auto;
+}
+
+
+
+/* top bar search */
+
 #top-bar-search {
     display: flex;
     height: 35px;
@@ -92,10 +100,26 @@ body {
     margin-top: -6px;
 }
 
-#top-bar-profile, #top-bar-login {
-    margin-left: auto;
+.search-suggestion-link-div {
+    display: block;
+    border-top: 1px solid rgb(64, 64, 64);
+    padding: 8px 0px 8px 4px;
 }
 
+.search-suggestion-link-div:hover {
+    background-color: rgb(74, 74, 74);
+    border-radius: 6px;
+}
+
+.search-suggestion-links {
+    text-decoration: none;
+    color: white;
+}
+
+.search-stock-longname {
+    color: rgb(114, 114, 114);
+    margin-left: 2px;   
+}
 
 
 
