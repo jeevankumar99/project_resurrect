@@ -1,4 +1,6 @@
- class Autocomplete extends React.Component {
+const searchIcon = "/static/stock/images/search-icon2.png"
+
+class Autocomplete extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -6,37 +8,54 @@
 		}
 	}
 	handleChange = (event) => {
-		console.log(String(event.target.value))
+		let elementID = event.target.id
 		let keyword = String(event.target.value)
-		let stockList = [];
-		fetch(`https://apidojo-yahoo-finance-v1.p.rapidapi.com/auto-complete?q=${keyword}&region=US`, {
-			"method": "GET",
-			"headers": {
-				"x-rapidapi-key": "479462f012mshe76e1e5aaa27ccdp1567d6jsnd0b820804b3b",
-				"x-rapidapi-host": "apidojo-yahoo-finance-v1.p.rapidapi.com"
-			}
-		})
-		.then(response => response.json())
-		.then(data => {
-			console.log(data);
-			data.quotes.forEach(stock => {
-				let para = (<p key={stock.symbol}>{stock.symbol}, {stock.longName}</p>)
-				stockList.push(para)
+		let searchIcon = document.querySelector('#top-bar-search-icon');
+		console.log(keyword.length)
+		if (keyword !== '') {
+			searchIcon.style.filter = "brightness(100%)";
+			let stockList = [];
+			fetch(`https://apidojo-yahoo-finance-v1.p.rapidapi.com/auto-complete?q=${keyword}&region=US`, {
+				"method": "GET",
+				"headers": {
+					"x-rapidapi-key": "479462f012mshe76e1e5aaa27ccdp1567d6jsnd0b820804b3b",
+					"x-rapidapi-host": "apidojo-yahoo-finance-v1.p.rapidapi.com"
+				}
 			})
-			this.setState(state => ({
-				suggestions: stockList
-			}))
-		})
-		.catch(err => {
-			console.error(err);
-		});
+			.then(response => response.json())
+			.then(data => {
+				let new_keyword = document.querySelector(`#${elementID}`).value;
+				if (new_keyword !== '') {
+					data.quotes.forEach(stock => {
+						let para = (<p key={stock.symbol}>{stock.symbol} - {stock.longname}</p>)
+						stockList.push(para)
+					})
+					this.setState(() => ({
+						suggestions: <div id="search-suggestions">{stockList}</div>
+					}))
+				}
+			})
+		}
+		else {
+			this.handleFocusOut();
+			searchIcon.style.filter = "brightness(45%)"
+		}
 	}
+
+	handleFocusOut = () => {
+		this.setState(() => ({
+			suggestions: null
+		}))
+	}
+
 	 render() {
 		 return (
-			 <div id="top-bar-search">
-			<input onChange={event => this.handleChange(event)} class="search-components" id="top-bar-search-bar" type="text" placeholder="Search"/>
-				<button class="search-components" id="top-bar-search-button">Icon</button>
-				<div id="search-suggestions">{this.state.suggestions}</div>
+			 <div>
+				<div id="top-bar-search">
+					<input onFocus={event=> this.handleChange(event)} onChange={event => this.handleChange(event)} onBlur={this.handleFocusOut} className="search-components" id="top-bar-search-bar" type="text" placeholder="Search"/>
+					<img src={searchIcon} className="search-components" id="top-bar-search-icon"/>
+				</div>
+				{this.state.suggestions}
 			</div>
 		 )
 	 }
