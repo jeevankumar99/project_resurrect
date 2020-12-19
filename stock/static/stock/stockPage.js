@@ -2,11 +2,15 @@
 google.charts.load('current', {'packages': ['corechart', 'table']});
 
 var symbol = String(window.location.pathname).slice(7, );
+var chartColor;
+
+ReactDOM.render(<StockInfo symbol={symbol}/>, document.querySelector('#stock-info'));
+
 
 fetch(`https://yahoo-finance-low-latency.p.rapidapi.com/v8/finance/spark?symbols=${symbol}&interval=1d&range=1wk`, {
 	"method": "GET",
 	"headers": {
-		"x-rapidapi-key": "479462f012mshe76e1e5aaa27ccdp1567d6jsnd0b820804b3b",
+		"x-rapidapi-key": API_KEY,
 		"x-rapidapi-host": "yahoo-finance-low-latency.p.rapidapi.com"
 	}
 })
@@ -21,6 +25,8 @@ fetch(`https://yahoo-finance-low-latency.p.rapidapi.com/v8/finance/spark?symbols
         currentDataPoint = [stockDate, data[symbol].close[i]]
         chartData.push(currentDataPoint)
     }
+    data[symbol].close[4] < data[symbol].close[3] ? 
+        (chartColor = "rgb(100, 25, 10)") : (chartColor = 'rgb(80, 100, 10)');
     console.log(chartData)
     google.charts.setOnLoadCallback(() => drawChart(chartData))
 })
@@ -31,7 +37,7 @@ function drawChart(chartData) {
     //     ['Month', 'Price', {type: 'string', role: 'tooltip'}],
     //     ['Jan', 360, '$300'],
     //     ['Feb', 310, '$310'],
-    //     ['Mar', 320, '$330'], 
+    //     ['Mar', 320, '$330'],
     //     ['Apr', 370, '$302'], 
     //     ['May', 390, '$280'], 
     //     ['June', 340, '$310'],
@@ -74,8 +80,10 @@ function drawChart(chartData) {
             easing: 'out',
             startup: true
         },
+        chartArea: {left: 100, width: '80%', height: '80%'},
+        width: '90%',
         crosshair: {trigger: 'both'},
-        colors: ['rgb(80, 100, 10)'],
+        colors: [chartColor],
         backgroundColor: {
             fill: 'rgb(18, 18, 18)',
             stroke: 'white',

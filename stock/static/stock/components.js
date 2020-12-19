@@ -1,4 +1,130 @@
 const searchIcon = "/static/stock/images/search-icon2.png"
+const API_KEY =  "29ec903916msh4471cca865bf5d4p10eb7fjsna94563f5456e"
+
+class AdditionalInfo extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			regularMarketDayHigh: this.props.stockInfo.regularMarketDayHigh,
+			regularMarketDayLow: this.props.stockInfo.regularMarketDayLow,
+			regularMarketDayRange: this.props.stockInfo.regularMarketDayRange,
+			regularMarketOpen: this.props.stockInfo.regularMarketDayRange,
+			twoHundredDayAverage: this.props.stockInfo.twoHundredDayAverage,
+			marketState: this.props.stockInfo.marketState,
+			marketCap: this.props.stockInfo.marketCap,
+			currency: this.props.stockInfo.currency,
+		}
+		this.state.marketState === 'CLOSED' ? this.marketColor = 'red' : this.marketColor = 'green';
+	}
+	render() {
+		return (
+			<div className="stock-chart-data" id="additional-data">
+				<ul>
+					<div className="additional-data-children">Market State : <font color={this.marketColor}> {this.state.marketState}</font></div>
+					<div className="additional-data-children">Regular Market Range: <font color="white"> {this.state.regularMarketDayRange} {this.state.currency}</font></div>
+					<div className="additional-data-children">Regular Market Low: <font color="red"> {this.state.regularMarketDayLow} {this.state.currency}</font></div>
+					<div className="additional-data-children">Regular Market High: <font color="green"> {this.state.regularMarketDayHigh} {this.state.currency}</font></div>
+					<div className="additional-data-children">Two Hundred Day Average: <font color="white"> {this.state.twoHundredDayAverage} {this.state.currency}</font></div>
+					<div className="additional-data-children">Market Cap: <font color="white"> {this.state.marketCap} {this.state.currency}</font></div>
+				</ul>
+			</div>
+		)
+	}
+}
+
+class StockInfo extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			// symbol: this.props.symbol,
+			// longName: null,
+			// exchangeTimezoneShortName: null,
+			// fiftyDayAverage: null,
+			// fullExchangeName: null,
+			// region: null,
+			// regularMarketChange: null,
+			// regularMarketChangePercent: null,
+			// regularMarketDayHigh: null,
+			// regularMarketDayLow: null,
+			// regularMarketDayRange: null,
+			// regularMarketOpen: null,
+			// regularMarketPreviousClose: null,
+			// regularMarketPrice: null
+		}
+		this.priceColor = null;
+	}
+
+	componentDidMount() {
+		fetch(`https://yahoo-finance-low-latency.p.rapidapi.com/v6/finance/quote?symbols=${this.props.symbol}`, {
+			"method": "GET",
+			"headers": {
+				"x-rapidapi-key": API_KEY,
+				"x-rapidapi-host": "yahoo-finance-low-latency.p.rapidapi.com"
+			}
+		})
+		.then(response => response.json())
+		.then(data => {
+			console.log(data.quoteResponse.result[0]);
+			let stockInfo = data.quoteResponse.result[0];
+			this.setState(() => ({
+				symbol: stockInfo.symbol,
+				longName: stockInfo.longName,
+				currency: stockInfo.currency,
+				exchangeTimezoneShortName: stockInfo.exchangeTimezoneShortName,
+				fiftyDayAverage: stockInfo.fiftyDayAverage.toFixed(2),
+				fullExchangeName: stockInfo.fullExchangeName,
+				region: stockInfo.region,
+				regularMarketChange: stockInfo.regularMarketChange.toFixed(4)	,
+				regularMarketChangePercent: stockInfo.regularMarketChangePercent.toFixed(4),
+				regularMarketPreviousClose: stockInfo.regularMarketPreviousClose,
+				regularMarketPrice: stockInfo.regularMarketPrice
+			}));
+			ReactDOM.render(<AdditionalInfo stockInfo={stockInfo} />, document.querySelector('#stock-additional-data'));
+		})
+	}
+
+	render() {
+		this.state.regularMarketChange < 0 ? this.priceColor = 'red' : this.priceColor = 'green';
+		return (
+			<table id="stock-info-table">
+				<thead>
+					<tr>
+						<td className="stock-info-upper-row" id="stock-info-title">
+							{this.state.symbol} - <font>{this.state.longName}</font>
+						</td>
+						<td className="stock-info-upper-row" id="stock-info-regular-price">
+							{this.state.regularMarketPrice} <font>{this.state.currency}</font>
+						</td>
+						<td className="stock-info-upper-row" id="stock-info-previous-close">
+							{this.state.regularMarketPreviousClose} <font>{this.state.currency}</font>
+						</td>
+						<td className="stock-info-upper-row" id="stock-info-fifty-day-average">
+							{this.state.fiftyDayAverage} <font>{this.state.currency}</font>
+						</td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td className="stock-info-lower-row" id="stock-info-exchange">
+							{this.state.fullExchangeName}  {this.state.region} ({this.state.exchangeTimezoneShortName})
+						</td>
+						<td className="stock-info-lower-row" id="stock-info-market-change">
+							<font color={this.priceColor}>
+								{this.state.regularMarketChange > 0 ? ('+') : (null)}
+								{this.state.regularMarketChange} ({this.state.regularMarketChangePercent}%)</font>
+						</td>
+						<td className="stock-info-lower-row">	
+							<font color='gray'>Previous Market Close</font>
+						</td>
+						<td className="stock-info-lower-row" id="stock-info-fifty-lower">
+							<font color='gray'>Fifty Day Average</font>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		)
+	}
+}
 
 class Autocomplete extends React.Component {
 	constructor(props) {
@@ -18,7 +144,7 @@ class Autocomplete extends React.Component {
 			fetch(`https://apidojo-yahoo-finance-v1.p.rapidapi.com/auto-complete?q=${keyword}&region=US`, {
 				"method": "GET",
 				"headers": {
-					"x-rapidapi-key": "479462f012mshe76e1e5aaa27ccdp1567d6jsnd0b820804b3b",
+					"x-rapidapi-key": API_KEY,
 					"x-rapidapi-host": "apidojo-yahoo-finance-v1.p.rapidapi.com"
 				}
 			})
@@ -27,7 +153,7 @@ class Autocomplete extends React.Component {
 				let new_keyword = document.querySelector(`#${elementID}`).value;
 				if (new_keyword !== '') {
 					data.quotes.forEach(stock => {
-						let para = (<a key={stock.symbol} className="search-suggestion-links" href={`stock/${stock.symbol}`}>
+						let para = (<a key={stock.symbol} className="search-suggestion-links" href={`/stock/${stock.symbol}`}>
 							<div className="search-suggestion-link-div">
 								{stock.symbol}  -  <font className="search-stock-longname">{stock.longname}</font>
 							</div>
@@ -303,6 +429,8 @@ class PopularStockTable extends React.Component {
 		)
 	}
 }
+
+ReactDOM.render(<Autocomplete />, document.querySelector('#top-bar-search-div'))
 
 function getCookie(name) {
     let cookieValue = null;
