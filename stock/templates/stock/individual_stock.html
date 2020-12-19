@@ -7,7 +7,11 @@
 {% endblock %}
 
 {% block body %}
-    <h2>{{ stock_symbol }}</h2>
-    <div id="stock-symbol"></div>
-    <div id="stock-chart" style="width: 900px; height: 500px"></div>
+    <div id="stock-info"></div>
+    <table id="stock-chart-and-data">
+        <tr>
+            <td><div class="stock-chart-data" id="stock-chart"></div></td>
+            <td id="stock-additional-data"></td>
+        </tr>
+    </table>
 {% endblock %}

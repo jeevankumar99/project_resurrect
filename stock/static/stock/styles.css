@@ -61,6 +61,7 @@ body {
 #top-bar-search-div {
     width: 40%;
     margin: 12px auto 0px auto;
+    z-index: 99;
 }
 
 #top-bar-search-bar {
@@ -127,7 +128,7 @@ body {
 
 /* NSE and BSE indexes */
 
-#main-indexes {
+#main-indexes, #stock-info {
     display: flex;
     width: 70%;
     background-color: rgb(46, 46, 46);
@@ -244,3 +245,65 @@ body {
     border-radius: 5px;
 }
 
+
+/* individual_stock.html */
+
+#stock-info {
+    padding: 8px 5px 8px 5px;
+}
+
+.stock-info-top-row-divs {
+    display: inline;
+}
+
+.stock-info-upper-row {
+    font-size: 28px;
+}
+
+.stock-info-upper-row font {
+    color: rgb(201, 201, 201);
+}
+
+#stock-info-table {
+    width: 100%;
+    text-align: center;
+    border-collapse: collapse;
+}
+
+#stock-info-title {
+    max-width: 300px;
+}
+
+#stock-info-exchange {
+    color: gray;
+}
+
+.stock-info-upper-row:not(#stock-info-fifty-day-average), .stock-info-lower-row:not(#stock-info-fifty-lower) {
+    border-right: 1px solid rgb(160, 160, 160);
+}
+
+
+#stock-chart {
+    width: 800px;
+    height: 450px;
+    background-color: blue;
+}
+
+#stock-chart-and-data {
+    width:  80%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+    border-spacing: 0px;
+}
+
+#stock-additional-data {
+    text-align: left;
+}
+
+.additional-data-children {
+    font-size: large;
+    text-align: left;
+    margin-bottom: 30px;
+    color: gray;
+}
