@@ -1,5 +1,53 @@
 const searchIcon = "/static/stock/images/search-icon2.png"
-const API_KEY =  "29ec903916msh4471cca865bf5d4p10eb7fjsna94563f5456e"
+const API_KEY =  "906765926amshebc39f8abc4333cp190d7bjsnee05cad1a6d0"
+
+class StockNewsChild extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			title: this.props.newsInfo.title.replace('&#39;', "'"),
+			summary: this.props.newsInfo.summary,
+			author_name: this.props.newsInfo.author_name,
+			thumbnail: this.props.newsInfo.thumbnail
+		}
+	}
+
+	render() {
+		return (
+			<div className="stock-news-info">
+				<div className="stock-news-thumbnail-div">
+				<img className="stock-news-thumbnail" src={this.state.thumbnail}></img>
+				</div>
+				<div><font className="news-title">{this.state.title}</font></div>
+				<div><font className="news-author">by {this.state.author_name}</font></div>
+			</div>
+		)
+	}
+}
+
+class StockNewsParent extends React.Component {
+	constructor(props) {
+		super(props);
+		this.newsChildrenList = []
+		this.props.newsChildren.forEach(news => {
+			this.newsChildrenList.push(
+				<StockNewsChild key={news.id} newsInfo={news} />
+			)	
+		});
+		this.state = {
+			newsChildrenData: this.newsChildrenList
+		}
+	}
+
+	render() {
+		return (
+			<div id="stock-news-component">
+				{this.state.newsChildrenData}
+			</div>
+		)
+	}
+
+}
 
 class AdditionalInfo extends React.Component {
 	constructor(props) {
@@ -35,22 +83,7 @@ class AdditionalInfo extends React.Component {
 class StockInfo extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {
-			// symbol: this.props.symbol,
-			// longName: null,
-			// exchangeTimezoneShortName: null,
-			// fiftyDayAverage: null,
-			// fullExchangeName: null,
-			// region: null,
-			// regularMarketChange: null,
-			// regularMarketChangePercent: null,
-			// regularMarketDayHigh: null,
-			// regularMarketDayLow: null,
-			// regularMarketDayRange: null,
-			// regularMarketOpen: null,
-			// regularMarketPreviousClose: null,
-			// regularMarketPrice: null
-		}
+		this.state = {}
 		this.priceColor = null;
 	}
 

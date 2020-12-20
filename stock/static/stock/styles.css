@@ -24,6 +24,7 @@ body {
     border-bottom: 1px solid rgb(70, 70, 70);
     margin-top: -80px;
     position: fixed;
+    z-index: 10;
 }
 
 .top-bar-link {
@@ -61,7 +62,6 @@ body {
 #top-bar-search-div {
     width: 40%;
     margin: 12px auto 0px auto;
-    z-index: 99;
 }
 
 #top-bar-search-bar {
@@ -306,3 +306,49 @@ body {
     margin-bottom: 30px;
     color: gray;
 }
+
+/* Stock News */
+
+.stock-news-info {
+    padding: 8px;
+    margin: 4px;
+    border-radius: 10px;
+    background-color: rgb(46, 46, 46);
+}
+
+#stock-news-component {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    background-color: rgb(18, 18, 18);
+}
+
+#stock-news {
+    margin-top: 20px;
+    width: 80%;
+    display: flex;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.news-author {
+    color: gray;
+    font-size: small;
+}
+
+.news-title {
+    font-size: large;   
+}
+
+.stock-news-thumbnail {
+    height: 150px;
+    margin: 0px auto 0px auto;
+}
+
+.stock-news-thumbnail-div {
+    background-color: rgb(18, 18, 18);
+    height: 200px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+}
+
+

@@ -6,7 +6,6 @@ var chartColor;
 
 ReactDOM.render(<StockInfo symbol={symbol}/>, document.querySelector('#stock-info'));
 
-
 fetch(`https://yahoo-finance-low-latency.p.rapidapi.com/v8/finance/spark?symbols=${symbol}&interval=1d&range=1wk`, {
 	"method": "GET",
 	"headers": {
@@ -31,43 +30,24 @@ fetch(`https://yahoo-finance-low-latency.p.rapidapi.com/v8/finance/spark?symbols
     google.charts.setOnLoadCallback(() => drawChart(chartData))
 })
 
+// For stock news.
+fetch(`https://yahoo-finance-low-latency.p.rapidapi.com/v2/finance/news?symbols=${symbol}`, {
+	"method": "GET",
+	"headers": {
+		"x-rapidapi-key": API_KEY,
+		"x-rapidapi-host": "yahoo-finance-low-latency.p.rapidapi.com"
+	}
+})
+.then(response => response.json())
+.then(data => {
+    let slicedData = data.Content.result.slice(0, 9);
+    ReactDOM.render(<StockNewsParent newsChildren={slicedData} />, document.querySelector('#stock-news'));
+})
+
 
 function drawChart(chartData) {
-    // var data = google.visualization.arrayToDataTable([
-    //     ['Month', 'Price', {type: 'string', role: 'tooltip'}],
-    //     ['Jan', 360, '$300'],
-    //     ['Feb', 310, '$310'],
-    //     ['Mar', 320, '$330'],
-    //     ['Apr', 370, '$302'], 
-    //     ['May', 390, '$280'], 
-    //     ['June', 340, '$310'],
-    //     ['July', 302, '$302'],
-    //     ['Aug', 280, '$330'],
-    //     ['Sep', 350, '$350'], 
-    //     ['Oct', 360, '$390'],
-    //     ['Nov', 420, '$420'],
-    //     ['Dec', 400, '$360']
-    // ]);
-
-    // var tempData = [['Month', 'Price', {type: 'string', role: 'tooltip'}],
-    // ['Jan', 360, '$300'],
-    // ['Feb', 310, '$310'],
-    // ['Mar', 320, '$330'], 
-    // ['Apr', 370, '$302'], 
-    // ['May', 390, '$280'], 
-    // ['June', 340, '$310'],
-    // ['July', 302, '$302'],
-    // ['Aug', 280, '$330'],
-    // ['Sep', 350, '$350'], 
-    // ['Oct', 360, '$390'],
-    // ['Nov', 420, '$420'],
-    // ['Dec', 400, '$360']]
-
-     console.log(chartData)
-
     var data = google.visualization.arrayToDataTable(chartData)
-
-
+    
     var options = {
         title: 'Stock price',
         titleTextStyle: {color: 'white'},
