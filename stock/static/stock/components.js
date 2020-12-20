@@ -268,12 +268,12 @@ class IndexStocks extends React.Component {
 				<thead>
 				<tr className="big-row">
 					<td onClick={() => window.location.href = 'stock/BSE'} id="BSE-symbol">{this.state.BSEsymbol}</td>
-					<td id="BSE-market-price">₹{this.state.BSEmarketPrice}</td>
+					<td id="BSE-market-price">{this.state.BSEmarketPrice}</td>
 					{ (this.desktopSite) ? 
 						(<td id="BSE-market-close" style={{color: this.BSEprevColor}}>{this.state.BSEmarketPreviousClose}</td>)
 						: (null)}
 					<td onClick={() => window.location.href = 'stock/NSE'} id="NSE-symbol">{this.state.NSEsymbol}</td>
-					<td id="NSE-market-price">₹{this.state.NSEmarketPrice}</td>
+					<td id="NSE-market-price">{this.state.NSEmarketPrice}</td>
 					{ (this.desktopSite) ? 
 						(<td id="NSE-market-close" style={{color: this.NSEprevColor}}>{this.state.NSEmarketPreviousClose}</td>)
 						: (null)}
@@ -413,7 +413,8 @@ class PopularStockData extends React.Component {
 				</td>
 				<td className="table-data" className="table-watchlist">
 					<button onClick={event => this.toggleWatchlist(event)} className="watchlist-button">
-						<img  style={{filter: this.state.watchlistButtonState}} className="watchlist-icon" src={watchlistIcon}></img></button>
+						<img  style={{filter: this.state.watchlistButtonState}} className="watchlist-icon" src={watchlistIcon}></img>
+					</button>
 				</td>
 				<td className="table-data" className="table-price"><font color={this.priceColor}>$ {this.state.price}</font></td>
 				<td className="table-data" className="table-change">$ {this.state.marketChange} / {this.state.marketChangePercent} %</td>
