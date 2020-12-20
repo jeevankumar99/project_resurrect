@@ -1,5 +1,6 @@
-const searchIcon = "/static/stock/images/search-icon2.png"
-const API_KEY =  "906765926amshebc39f8abc4333cp190d7bjsnee05cad1a6d0"
+const searchIcon = "/static/stock/images/search-icon2.png";
+const watchlistIcon = "/static/stock/images/watchlist-icon.png";
+const API_KEY =  "2512804e5dmsh4c41069e53a5f0fp15b71fjsnf9d6cab3cadf";
 
 class StockNewsChild extends React.Component {
 	constructor(props) {
@@ -267,12 +268,12 @@ class IndexStocks extends React.Component {
 				<thead>
 				<tr className="big-row">
 					<td onClick={() => window.location.href = 'stock/BSE'} id="BSE-symbol">{this.state.BSEsymbol}</td>
-					<td id="BSE-market-price">{this.state.BSEmarketPrice}</td>
+					<td id="BSE-market-price">₹{this.state.BSEmarketPrice}</td>
 					{ (this.desktopSite) ? 
 						(<td id="BSE-market-close" style={{color: this.BSEprevColor}}>{this.state.BSEmarketPreviousClose}</td>)
 						: (null)}
 					<td onClick={() => window.location.href = 'stock/NSE'} id="NSE-symbol">{this.state.NSEsymbol}</td>
-					<td id="NSE-market-price">{this.state.NSEmarketPrice}</td>
+					<td id="NSE-market-price">₹{this.state.NSEmarketPrice}</td>
 					{ (this.desktopSite) ? 
 						(<td id="NSE-market-close" style={{color: this.NSEprevColor}}>{this.state.NSEmarketPreviousClose}</td>)
 						: (null)}
@@ -281,12 +282,16 @@ class IndexStocks extends React.Component {
 				<tbody>
 				<tr className="small-row">
 					<td id="BSE-lower-symbol">{this.state.BSEquoteType} | {this.state.BSEexchangeTimezoneShortName}</td>
-					<td id="BSE-market-change"><font color={this.BSEpriceColor}>{this.state.BSEmarketChange} ({this.state.BSEmarketChangePercent})</font></td>
+					<td id="BSE-market-change"><font color={this.BSEpriceColor}>
+						{this.state.BSEmarketChange > 0 ? ('+') : (null)}
+						{this.state.BSEmarketChange} ({this.state.BSEmarketChangePercent})</font></td>
 					{ (this.desktopSite) ? 
 						(<td id="BSE-lower-close">Previous market close</td>)
 						: (null)}
 					<td id="NSE-lower-symbol">{this.state.NSEquoteType} | {this.state.NSEexchangeTimezoneShortName}</td>
-					<td id="NSE-market-change"><font color={this.NSEpriceColor}>{this.state.NSEmarketChange} ({this.state.NSEmarketChangePercent})</font></td>
+					<td id="NSE-market-change"><font color={this.NSEpriceColor}>
+						{this.state.NSEmarketChange > 0 ? ('+') : (null)}
+						{this.state.NSEmarketChange} ({this.state.NSEmarketChangePercent})</font></td>
 					{ (this.desktopSite) ? 
 						(<td id="NSE-lower-close">Previous market close</td>)
 						: (null)}
@@ -312,6 +317,7 @@ class PopularStockData extends React.Component {
 			previousClose: this.props.stock.regularMarketPreviousClose,
 			isWatchlistPage: this.props.stock.isWatchlistPage,
 			watchlistButtonText: null,
+			watchlistButtonState: null
 		}
 
 		// To change the color depending on rise and fall of price.
@@ -333,10 +339,12 @@ class PopularStockData extends React.Component {
 			fetch(`watchlist_handler/${this.state.symbol}`)
 			.then(response => response.json())
 			.then(data => {
-				let buttonState
-				(data.watching) ? (buttonState = "Unwatch") : (buttonState = "Watch");
+				let buttonState, buttonText;
+				(data.watching) ? (buttonState = "brightness(100%)", buttonText = "Unwatch") : 
+					(buttonState="brightness(40%)", buttonText = "Watch");
 				this.setState(()=> ({
-					watchlistButtonText: buttonState
+					watchlistButtonText: buttonText,
+					watchlistButtonState: buttonState,
 				}));
 			})
 		}
@@ -344,7 +352,8 @@ class PopularStockData extends React.Component {
 		// Else just display initiale button state.
 		else {
 			this.setState(() => ({
-				watchlistButtonText: "watch"
+				watchlistButtonText: "Watch",
+				watchlistButtonState: "brightness(40%)"
 			}));
 		}
 
@@ -361,14 +370,16 @@ class PopularStockData extends React.Component {
 		}
 
 		// Handle toggle when user is logged in.
-		let action, newButtonState;
+		let action, newButtonState, newButtonText;
 		if (this.state.watchlistButtonText === "Watch") {
 			action = "add";
-			newButtonState = "Unwatch";
+			newButtonText = "Unwatch";
+			newButtonState = 'brightness(100%)';
 		}
 		else {
 			action = "remove";
-			newButtonState = "Watch"
+			newButtonText = "Watch"
+			newButtonState = 'brightness(40%)';
 		}
 
 		if (this.state.isWatchlistPage) {
@@ -388,7 +399,8 @@ class PopularStockData extends React.Component {
 
 		// Change state
 		this.setState(state => ({
-			watchlistButtonText: newButtonState
+			watchlistButtonText: newButtonText,
+			watchlistButtonState: newButtonState,
 		}));
 		console.log("request sent!")
 	}
@@ -400,7 +412,8 @@ class PopularStockData extends React.Component {
 					{this.state.symbol}
 				</td>
 				<td className="table-data" className="table-watchlist">
-					<button onClick={event => this.toggleWatchlist(event)} className="watchlist-button">{this.state.watchlistButtonText}</button>
+					<button onClick={event => this.toggleWatchlist(event)} className="watchlist-button">
+						<img  style={{filter: this.state.watchlistButtonState}} className="watchlist-icon" src={watchlistIcon}></img></button>
 				</td>
 				<td className="table-data" className="table-price"><font color={this.priceColor}>$ {this.state.price}</font></td>
 				<td className="table-data" className="table-change">$ {this.state.marketChange} / {this.state.marketChangePercent} %</td>

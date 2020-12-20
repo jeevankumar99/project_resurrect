@@ -226,10 +226,31 @@ body {
 
 .watchlist-button {
     margin-left: auto;
+    background: none;
+    border: 0px;
+}
+
+
+.watchlist-button:hover {
+    cursor: pointer;
+    outline: none;
+}
+
+.watchlist-button:focus {
+    outline: none;
 }
 
 .table-watchlist {
     text-align: center;
+}
+
+.watchlist-icon {
+    width: 20px;
+}
+
+.watchlist-icon:hover {
+    filter: brightness(0.8);
+    width: 23px;
 }
 
 /* scrollbar of popular stocks */
@@ -318,13 +339,14 @@ body {
 
 #stock-news-component {
     display: grid;
-    grid-template-columns: auto auto auto;
+    width: 100%;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     background-color: rgb(18, 18, 18);
 }
 
 #stock-news {
-    margin-top: 20px;
-    width: 80%;
+    margin-top: 30px;
+    width: 75%;
     display: flex;
     margin-left: auto;
     margin-right: auto;
