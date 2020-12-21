@@ -2,6 +2,94 @@ const searchIcon = "/static/stock/images/search-icon2.png";
 const watchlistIcon = "/static/stock/images/watchlist-icon.png";
 const API_KEY =  "2512804e5dmsh4c41069e53a5f0fp15b71fjsnf9d6cab3cadf";
 
+
+class BuySellPopup extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			shortName: this.props.stockInfo.shortName,
+			regularMarketPrice: this.props.stockInfo.regularMarketPrice.toFixed(2),
+			currency: this.props.stockInfo.currency,
+			balance: this.props.userInfo.balance,
+			profits: this.props.userInfo.profits,
+			losses: this.props.userInfo.losses,
+			quantity: 1,
+			total: this.props.stockInfo.regularMarketPrice.toFixed(2)
+		}
+	}
+
+	calculateTotal = (quantity) => {
+		quantity === 0 ? quantity = 1 : null;
+		console.log(quantity)
+		this.setState((state) => ({
+			total: state.regularMarketPrice * quantity
+		}))
+	}
+
+	closePopup = () => {
+		console.log('close popup button clicked!');
+		ReactDOM.unmountComponentAtNode(document.querySelector('#popup-container'));
+	}
+
+	changeQuantity = (action) => {
+		let currentValue = parseInt(document.querySelector('#quantity-input-box').value);
+			!currentValue ? (currentValue = 1) : (null);
+		if (action === 'increase' ) {
+			document.querySelector('#quantity-input-box').value = currentValue + 1;
+			this.calculateTotal(currentValue + 1)
+		}
+		else {
+			if (currentValue > 1) {
+				document.querySelector('#quantity-input-box').value = currentValue - 1;
+				this.calculateTotal(currentValue - 1);
+			}
+		}
+	}
+
+
+	render() {
+		return (
+			<div>
+				<div id="overlay"></div>
+				<div className="buy-sell-popup">
+					<div id='popup-header-div'>
+						<div id="popup-title">
+							Buy {this.props.stockInfo.shortName} stocks
+						</div>
+						<div id='popup-close-button-div'>
+							<button onClick={this.closePopup} id="popup-close-button">X</button>
+						</div>
+					</div>
+					<div className="popup-stock-info" id="popup-current-price">
+						Current Price: {this.state.regularMarketPrice} {this.state.currency}
+					</div>
+					<div className="popup-stock-info" id="popup-quantity">
+						Quantity: 
+						<div id="popup-quantity-selector">
+							<button onClick={() => this.changeQuantity('reduce')} className="quantity-selector-item" id="quantity-reduce-button">-</button>
+							<input onChange={event => this.calculateTotal(event.target.value)} placeholder='1' className="quantity-selector-item" id="quantity-input-box"  type="number" min="1">
+							</input>
+							<button onClick={() => this.changeQuantity('increase')} className="quantity-selector-item" id="quantity-increase-button">+</button>
+						</div>
+					</div>
+					<div className="popup-stock-info" id="popup-balance">
+						Balance: {this.state.balance}
+					</div>
+					<div className="popup-stock-info" id="popup-balance">
+						Live Balance: {this.state.balance - this.state.total}
+					</div>
+					<div className="popup-stock-info" id="popup-total">
+						Total: {this.state.total}
+					</div>
+					<div id="popup-confirm-purchase">
+						<button id="confirm-purchase-button">Confirm Purchase</button>
+					</div>
+				</div>
+			</div>
+		)
+	}
+}
+
 class StockNewsChild extends React.Component {
 	constructor(props) {
 		super(props);
@@ -64,6 +152,26 @@ class AdditionalInfo extends React.Component {
 			currency: this.props.stockInfo.currency,
 		}
 		this.state.marketState === 'CLOSED' ? this.marketColor = 'red' : this.marketColor = 'green';
+		this.userInfo
+	}
+
+	componentDidMount() {
+		console.log('lolvava');
+		fetch('/get_user_info')
+		.then(response => response.json())
+		.then(data => {
+			this.userInfo = data;
+			this.setState(() => ({
+				balance: data.balance,
+				profits: data.profits,
+				losses: data.losses
+			}))
+		})
+	}
+
+	buyStock = () => {
+		console.log('buy stock initiated!');
+		ReactDOM.render(<BuySellPopup userInfo={this.userInfo} stockInfo={this.props.stockInfo} />, document.querySelector('#popup-container'));
 	}
 	render() {
 		return (
@@ -76,6 +184,10 @@ class AdditionalInfo extends React.Component {
 					<div className="additional-data-children">Two Hundred Day Average: <font color="white"> {this.state.twoHundredDayAverage} {this.state.currency}</font></div>
 					<div className="additional-data-children">Market Cap: <font color="white"> {this.state.marketCap} {this.state.currency}</font></div>
 				</ul>
+				<div id="buy-sell-button-div">
+					<button onClick={this.buyStock} className="buy-button" id="buy-button">Buy</button>
+					<button onClick={this.sellStock} className="sell-button"  id="sell-button">Sell</button>
+				</div>
 			</div>
 		)
 	}
@@ -414,7 +526,7 @@ class PopularStockData extends React.Component {
 				<td className="table-data" className="table-watchlist">
 					<button onClick={event => this.toggleWatchlist(event)} className="watchlist-button">
 						<img  style={{filter: this.state.watchlistButtonState}} className="watchlist-icon" src={watchlistIcon}></img>
-					</button>
+				</button>
 				</td>
 				<td className="table-data" className="table-price"><font color={this.priceColor}>$ {this.state.price}</font></td>
 				<td className="table-data" className="table-change">$ {this.state.marketChange} / {this.state.marketChangePercent} %</td>

@@ -307,6 +307,7 @@ body {
 #stock-chart {
     width: 800px;
     height: 450px;
+    z-index: 1;
 }
 
 #stock-chart-and-data {
@@ -324,7 +325,7 @@ body {
 .additional-data-children {
     font-size: large;
     text-align: left;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     color: gray;
 }
 
@@ -373,4 +374,75 @@ body {
     margin-bottom: 8px;
 }
 
+.buy-button, .sell-button {
+    display: inline;
+    margin: 10px 5px 0px 10px;
+}
 
+.buy-button:hover, .sell-button:hover {
+    cursor: pointer;
+}
+
+#buy-sell-button-div {
+    display: flex;
+}
+
+.buy-sell-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    background-color: rgb(32, 32, 32);
+    width: 40%;
+    height: 70vh;
+    border-radius: 15px;
+    border: 1px solid rgb(70, 70, 70);
+    padding: 10px;
+}
+
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, .8);
+    z-index: 9;
+}
+
+.popup-stock-info {
+    margin: 18px 0px 18px 0px;
+}
+
+#popup-title {
+    font-size: 24px;
+    text-align: center;
+    display: inline;
+}
+
+#popup-header-div {
+    padding-bottom: 10px;
+    display: flex;
+    border-bottom: 1px solid rgb(70, 70, 70);
+    margin-bottom: 25px;
+}
+
+#popup-close-button-div {
+    margin-left: auto;
+    display: inline;
+}
+
+#popup-close-button {
+    background: none;
+    border: none;
+    color: white;
+}
+
+#popup-quantity-selector {
+    display: flex;
+}
+
+.quantity-selector-item {
+    display: inline;
+}

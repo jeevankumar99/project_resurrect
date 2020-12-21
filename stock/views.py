@@ -60,6 +60,14 @@ def get_watchlist(request):
     return JsonResponse(serialized_watchlist, safe=False)
 
 @login_required(login_url='/login')
+def get_user_info(request):
+    if request.method == "GET":
+        user = User.objects.get(username=request.user)
+        return JsonResponse(user.serialize(), safe=False)
+    else:
+        return JsonResponse({'error': "only GET request needed"}, status=400)
+
+@login_required(login_url='/login')
 def watchlist_view(request):
     return render(request, "stock/watchlist.html")
 

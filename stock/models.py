@@ -6,6 +6,14 @@ class User(AbstractUser):
     profits = models.DecimalField(decimal_places=2, max_digits=20, default=0)
     losses = models.DecimalField(decimal_places=2, max_digits=20, default=0)
 
+    def serialize(self):
+        return {
+            'username': self.username,
+            'balance': self.balance,
+            'profits': self.profits,
+            'losses': self.losses
+        }
+
 class Portfolio(models.Model):
     stock_symbol = models.CharField(blank=False, max_length=12)
     user = models.ForeignKey("User", on_delete=models.CASCADE, related_name="portfolio_user")
