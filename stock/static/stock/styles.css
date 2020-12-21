@@ -374,13 +374,34 @@ body {
     margin-bottom: 8px;
 }
 
-.buy-button, .sell-button {
-    display: inline;
-    margin: 10px 5px 0px 10px;
+#buy-sell-button-div {
+    margin-top: 50px;
 }
+
+
+.buy-button, .sell-button {
+    height: 40px;
+    display: inline;
+    margin: 10px 5px 20px 10px;
+    width: 90px;
+    border-radius: 15px;
+    border: 0px;
+    background-color: rgb(37, 153, 37);
+    color: white;
+    font-size: large;
+}
+
+.sell-button {
+    background-color: red;
+}
+
 
 .buy-button:hover, .sell-button:hover {
     cursor: pointer;
+}
+
+.buy-button:focus, .sell-button:focus {
+    outline: none;
 }
 
 #buy-sell-button-div {
@@ -394,8 +415,8 @@ body {
     transform: translate(-50%, -50%);
     z-index: 10;
     background-color: rgb(32, 32, 32);
-    width: 40%;
-    height: 70vh;
+    width: 25%;
+    height: 50vh;
     border-radius: 15px;
     border: 1px solid rgb(70, 70, 70);
     padding: 10px;
@@ -413,6 +434,7 @@ body {
 
 .popup-stock-info {
     margin: 18px 0px 18px 0px;
+    font-size: large;
 }
 
 #popup-title {
@@ -439,6 +461,10 @@ body {
     color: white;
 }
 
+#popup-close-button:hover {
+    cursor: pointer;
+
+}
 #popup-quantity-selector {
     display: flex;
 }
@@ -446,3 +472,45 @@ body {
 .quantity-selector-item {
     display: inline;
 }
+
+.popup-quantity-selector {
+    padding: 5px;
+    margin-top: 10px;
+}
+
+#quantity-reduce-button, #quantity-increase-button {
+    background-color: rgb(32, 32, 32);
+    border: 1px solid white;
+    color: white;
+    border-radius: 30px;
+    margin: 0px 5px 0px 5px;
+    font-size: large;
+    height: 30px;
+    width: 30px;
+}
+
+#quantity-reduce-button:hover, #quantity-increase-button:hover {
+    background-color: white;
+    color: black;
+    cursor: pointer;
+}
+
+#quantity-reduce-button:focus, #quantity-increase-button:focus {
+    outline: none;
+}
+
+#quantity-input-box {
+    width: 100px;
+    border-radius: 5px;
+    height: 30px;
+    color: white;
+    background-color:rgb(20, 20, 20);
+    border: 1px solid rgb(70, 70, 70);
+}
+
+.popup-span {
+    color: rgb(175, 175, 175);
+    font-size: medium;
+    margin-right: auto;
+}
+

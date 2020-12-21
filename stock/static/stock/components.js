@@ -1,16 +1,17 @@
 const searchIcon = "/static/stock/images/search-icon2.png";
 const watchlistIcon = "/static/stock/images/watchlist-icon.png";
-const API_KEY =  "2512804e5dmsh4c41069e53a5f0fp15b71fjsnf9d6cab3cadf";
+const API_KEY =  "906765926amshebc39f8abc4333cp190d7bjsnee05cad1a6d0";
 
 
 class BuySellPopup extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			symbol: this.props.stockInfo.symbol,
 			shortName: this.props.stockInfo.shortName,
 			regularMarketPrice: this.props.stockInfo.regularMarketPrice.toFixed(2),
 			currency: this.props.stockInfo.currency,
-			balance: this.props.userInfo.balance,
+			balance: this.props.userInfo.balance.toFixed(2),
 			profits: this.props.userInfo.profits,
 			losses: this.props.userInfo.losses,
 			quantity: 1,
@@ -22,7 +23,8 @@ class BuySellPopup extends React.Component {
 		quantity === 0 ? quantity = 1 : null;
 		console.log(quantity)
 		this.setState((state) => ({
-			total: state.regularMarketPrice * quantity
+			total: state.regularMarketPrice * quantity,
+			quantity: quantity
 		}))
 	}
 
@@ -46,6 +48,25 @@ class BuySellPopup extends React.Component {
 		}
 	}
 
+	purchaseStock = () => {
+		console.log('stock purchase clicked');
+		let csrf_token = getCookie('csrftoken');
+		fetch('/purchase_stock', {
+			method: "POST", 
+			body: JSON.stringify({
+				stockSymbol: this.state.symbol,
+				quantity: this.state.quantity,
+				balance: this.state.balance - this.state.total
+			}),
+			headers: {'X-CSRFToken': csrf_token}
+		})
+		.then(response => response.json())
+		.then(data => {
+			console.log(data);
+			this.closePopup();
+		});
+	}
+
 
 	render() {
 		return (
@@ -61,10 +82,13 @@ class BuySellPopup extends React.Component {
 						</div>
 					</div>
 					<div className="popup-stock-info" id="popup-current-price">
-						Current Price: {this.state.regularMarketPrice} {this.state.currency}
+						<font className="popup-span">Current Price:</font> {this.state.regularMarketPrice} {this.state.currency}
+					</div>
+					<div className="popup-stock-info" id="popup-balance">
+						<font className="popup-span">Your Balance:</font> {this.state.balance}
 					</div>
 					<div className="popup-stock-info" id="popup-quantity">
-						Quantity: 
+						<div className="popup-span" style={{marginBottom: '25px'}}>Quantity:</div> 
 						<div id="popup-quantity-selector">
 							<button onClick={() => this.changeQuantity('reduce')} className="quantity-selector-item" id="quantity-reduce-button">-</button>
 							<input onChange={event => this.calculateTotal(event.target.value)} placeholder='1' className="quantity-selector-item" id="quantity-input-box"  type="number" min="1">
@@ -73,16 +97,13 @@ class BuySellPopup extends React.Component {
 						</div>
 					</div>
 					<div className="popup-stock-info" id="popup-balance">
-						Balance: {this.state.balance}
-					</div>
-					<div className="popup-stock-info" id="popup-balance">
-						Live Balance: {this.state.balance - this.state.total}
+						<font className="popup-span">Your Live Balance: </font>{this.state.balance - this.state.total}
 					</div>
 					<div className="popup-stock-info" id="popup-total">
 						Total: {this.state.total}
 					</div>
 					<div id="popup-confirm-purchase">
-						<button id="confirm-purchase-button">Confirm Purchase</button>
+						<button onClick={this.purchaseStock} id="confirm-purchase-button">Confirm Purchase</button>
 					</div>
 				</div>
 			</div>
@@ -183,11 +204,12 @@ class AdditionalInfo extends React.Component {
 					<div className="additional-data-children">Regular Market High: <font color="green"> {this.state.regularMarketDayHigh} {this.state.currency}</font></div>
 					<div className="additional-data-children">Two Hundred Day Average: <font color="white"> {this.state.twoHundredDayAverage} {this.state.currency}</font></div>
 					<div className="additional-data-children">Market Cap: <font color="white"> {this.state.marketCap} {this.state.currency}</font></div>
+					<div className="additional-data-children" id="buy-sell-button-div">
+						<button onClick={this.buyStock} className="buy-button" id="buy-button">Buy</button>
+						<button onClick={this.sellStock} className="sell-button"  id="sell-button">Sell</button>
+					</div>
 				</ul>
-				<div id="buy-sell-button-div">
-					<button onClick={this.buyStock} className="buy-button" id="buy-button">Buy</button>
-					<button onClick={this.sellStock} className="sell-button"  id="sell-button">Sell</button>
-				</div>
+
 			</div>
 		)
 	}
@@ -223,7 +245,7 @@ class StockInfo extends React.Component {
 				regularMarketChange: stockInfo.regularMarketChange.toFixed(4)	,
 				regularMarketChangePercent: stockInfo.regularMarketChangePercent.toFixed(4),
 				regularMarketPreviousClose: stockInfo.regularMarketPreviousClose,
-				regularMarketPrice: stockInfo.regularMarketPrice
+				regularMarketPrice: stockInfo.regularMarketPrice.toFixed(2)
 			}));
 			ReactDOM.render(<AdditionalInfo stockInfo={stockInfo} />, document.querySelector('#stock-additional-data'));
 		})

@@ -89,6 +89,28 @@ def login_view(request):
             })
     return render(request, "stock/login.html")
 
+@login_required(login_url='/login')
+def purchase_stock(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        stock_symbol = data.get('stockSymbol')
+        quantity = data.get('quantity')
+        balance = data.get('balance')
+        user = User.objects.get(username=request.user)
+        user.balance = balance
+        user.save()
+        print(stock_symbol, quantity, balance)
+        try:
+           existing_portfolio = Portfolio.objects.get(user=user, stock_symbol=stock_symbol)
+        except Portfolio.DoesNotExist:
+            Portfolio.objects.create(user=user, stock_symbol=stock_symbol, quantity=quantity)
+            return JsonResponse({'message': "Stock purchased"}, status=200)
+        existing_portfolio.quantity += quantity
+        existing_portfolio.save()
+        return JsonResponse({'message' : 'Stock quantity updated'}, status=200)
+    else:
+        return JsonResponse({'error': "POST request needed"}, status=400)
+
 def profile_view(request):
     return render(request, "stock/profile.html")
 
