@@ -2,39 +2,141 @@ const searchIcon = "/static/stock/images/search-icon2.png";
 const watchlistIcon = "/static/stock/images/watchlist-icon.png";
 const API_KEY =  "479462f012mshe76e1e5aaa27ccdp1567d6jsnd0b820804b3b";
 
-class NotificationPopup extends React.Component {
+
+// Additional Stock Info in the individual stock page.
+class AdditionalInfo extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			title: this.props.info.title,
-			content: this.props.info.content,
-			titleColor: this.props.info.titleColor
+			regularMarketDayHigh: this.props.stockInfo.regularMarketDayHigh,
+			regularMarketDayLow: this.props.stockInfo.regularMarketDayLow,
+			regularMarketDayRange: this.props.stockInfo.regularMarketDayRange,
+			regularMarketOpen: this.props.stockInfo.regularMarketDayRange,
+			twoHundredDayAverage: this.props.stockInfo.twoHundredDayAverage,
+			marketState: this.props.stockInfo.marketState,
+			marketCap: this.props.stockInfo.marketCap,
+			currency: this.props.stockInfo.currency,
 		}
+		this.state.marketState === 'CLOSED' ? this.marketColor = 'red' : this.marketColor = 'green';
+		this.userInfo
 	}
 
-	render () {
-		setTimeout(() => {
-			let notificationPopup = document.querySelector('#notification-popup');
-			notificationPopup.style.animationName = 'slide_out';
-			notificationPopup.style.animationFillMode = 'backwards';
-		}, 4000)
-		setTimeout(() => {
-			ReactDOM.unmountComponentAtNode(document.querySelector('#notification-container'));
-		}, 5000);
+	componentDidMount() {
+		fetch('/get_user_info')
+		.then(response => response.json())
+		.then(data => {
+			this.userInfo = data;
+			this.setState(() => ({
+				balance: data.balance,
+				profits: data.profits,
+				losses: data.losses
+			}))
+		})
+	}
+
+	// Renders the buy/sell popup once buy is clicked.
+	buyStock = () => {
+		ReactDOM.render(<BuySellPopup userInfo={this.userInfo} stockInfo={this.props.stockInfo} />, document.querySelector('#popup-container'));
+	}
+	render() {
 		return (
-			<div id="notification-popup">
-				<div id="notification-title" style={{color: this.state.titleColor}}>
-					{this.state.title}
-				</div>
-				<div id="notification-content">{this.state.content}</div>
+			<div className="stock-chart-data" id="additional-data">
+				<ul>
+					<div className="additional-data-children">Market State : <font color={this.marketColor}> {this.state.marketState}</font></div>
+					<div className="additional-data-children">Regular Market Range: <font color="white"> {this.state.regularMarketDayRange} {this.state.currency}</font></div>
+					<div className="additional-data-children">Regular Market Low: <font color="red"> {this.state.regularMarketDayLow} {this.state.currency}</font></div>
+					<div className="additional-data-children">Regular Market High: <font color="green"> {this.state.regularMarketDayHigh} {this.state.currency}</font></div>
+					<div className="additional-data-children">Two Hundred Day Average: <font color="white"> {this.state.twoHundredDayAverage} {this.state.currency}</font></div>
+					<div className="additional-data-children">Market Cap: <font color="white"> {this.state.marketCap} {this.state.currency}</font></div>
+					<div className="additional-data-children" id="buy-sell-button-div">
+						<button onClick={this.buyStock} className="buy-button" id="buy-button">Buy</button>
+						<button onClick={this.sellStock} className="sell-button"  id="sell-button">Sell</button>
+					</div>
+				</ul>
+
 			</div>
 		)
 	}
-
 }
 
 
-class BuySellPopup extends React.Component {
+// Displays Stock suggestions during search.
+class Autocomplete extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			suggestions: null
+		}
+	}
+
+	// Modifies suggestions according to change in search bar.
+	handleChange = (event) => {
+		let elementID = event.target.id
+		let keyword = String(event.target.value)
+		let searchIcon = document.querySelector('#top-bar-search-icon');
+		
+		// if search bar is not empty.
+		if (keyword !== '') {
+			searchIcon.style.filter = "brightness(100%)";
+			let stockList = [];
+			fetch(`https://apidojo-yahoo-finance-v1.p.rapidapi.com/auto-complete?q=${keyword}&region=US`, {
+				"method": "GET",
+				"headers": {
+					"x-rapidapi-key": API_KEY,
+					"x-rapidapi-host": "apidojo-yahoo-finance-v1.p.rapidapi.com"
+				}
+			})
+			.then(response => response.json())
+			.then(data => {
+				let new_keyword = document.querySelector(`#${elementID}`).value;
+				if (new_keyword !== '') {
+					data.quotes.forEach(stock => {
+						let para = (<a key={stock.symbol} className="search-suggestion-links" href={`/stock/${stock.symbol}`}>
+							<div className="search-suggestion-link-div">
+								{stock.symbol}  -  <font className="search-stock-longname">{stock.longname}</font>
+							</div>
+						</a>)
+						stockList.push(para)
+					})
+					this.setState(() => ({
+						suggestions: <div id="search-suggestions">{stockList}</div>
+					}))
+				}
+			})
+		}
+
+		// show disabled search icon when bar is empty.
+		else {
+			this.handleFocusOut();
+			searchIcon.style.filter = "brightness(45%)"
+		}
+	}
+
+	// close suggestions when out of focus.
+	handleFocusOut = () => {
+		setTimeout(() => {
+			this.setState(() => ({
+				suggestions: null
+			}))
+		}, 200)
+	}
+
+	 render() {
+		 return (
+			 <div>
+				<div id="top-bar-search">
+					<input onFocus={event=> this.handleChange(event)} onChange={event => this.handleChange(event)} onBlur={this.handleFocusOut} className="search-components" id="top-bar-search-bar" type="text" placeholder="Search"/>
+					<img src={searchIcon} className="search-components" id="top-bar-search-icon"/>
+				</div>
+				{this.state.suggestions}
+			</div>
+		 )
+	 }
+ }
+
+
+ // Displays Popup for buying and selling stocks.
+ class BuySellPopup extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -50,6 +152,7 @@ class BuySellPopup extends React.Component {
 		}
 	}
 
+	// Calculates total based on the current quantity in the input bar
 	calculateTotal = (quantity) => {
 		quantity === 0 ? quantity = 1 : null;
 		console.log(quantity)
@@ -64,6 +167,7 @@ class BuySellPopup extends React.Component {
 		ReactDOM.unmountComponentAtNode(document.querySelector('#popup-container'));
 	}
 
+	// Changes quantity when - or + buttons are clicked.
 	changeQuantity = (action) => {
 		let currentValue = parseInt(document.querySelector('#quantity-input-box').value);
 			!currentValue ? (currentValue = 1) : (null);
@@ -79,6 +183,7 @@ class BuySellPopup extends React.Component {
 		}
 	}
 
+	// Updates backend to when purchase is confirmed.
 	purchaseStock = () => {
 		console.log('stock purchase clicked');
 		let csrf_token = getCookie('csrftoken');
@@ -94,6 +199,8 @@ class BuySellPopup extends React.Component {
 		.then(response => response.json())
 		.then(data => {
 			console.log(data);
+
+			// To get display notification once purchase is complete.
 			let info = {
 				title: 'Purchase Successful!',
 				content: `You bought ${this.state.quantity} stocks of ${this.state.symbol} for ${this.state.total}`,
@@ -103,7 +210,6 @@ class BuySellPopup extends React.Component {
 			ReactDOM.render(<NotificationPopup info={info} />, document.querySelector('#notification-container'));
 		});
 	}
-
 
 	render() {
 		return (
@@ -151,257 +257,8 @@ class BuySellPopup extends React.Component {
 	}
 }
 
-class StockNewsChild extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			title: this.props.newsInfo.title.replace('&#39;', "'"),
-			summary: this.props.newsInfo.summary,
-			author_name: this.props.newsInfo.author_name,
-			thumbnail: this.props.newsInfo.thumbnail
-		}
-	}
-
-	render() {
-		return (
-			<div className="stock-news-info">
-				<div className="stock-news-thumbnail-div">
-				<img className="stock-news-thumbnail" src={this.state.thumbnail}></img>
-				</div>
-				<div><font className="news-title">{this.state.title}</font></div>
-				<div><font className="news-author">by {this.state.author_name}</font></div>
-			</div>
-		)
-	}
-}
-
-class StockNewsParent extends React.Component {
-	constructor(props) {
-		super(props);
-		this.newsChildrenList = []
-		this.props.newsChildren.forEach(news => {
-			this.newsChildrenList.push(
-				<StockNewsChild key={news.id} newsInfo={news} />
-			)	
-		});
-		this.state = {
-			newsChildrenData: this.newsChildrenList
-		}
-	}
-
-	render() {
-		return (
-			<div id="stock-news-component">
-				{this.state.newsChildrenData}
-			</div>
-		)
-	}
-
-}
-
-class AdditionalInfo extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			regularMarketDayHigh: this.props.stockInfo.regularMarketDayHigh,
-			regularMarketDayLow: this.props.stockInfo.regularMarketDayLow,
-			regularMarketDayRange: this.props.stockInfo.regularMarketDayRange,
-			regularMarketOpen: this.props.stockInfo.regularMarketDayRange,
-			twoHundredDayAverage: this.props.stockInfo.twoHundredDayAverage,
-			marketState: this.props.stockInfo.marketState,
-			marketCap: this.props.stockInfo.marketCap,
-			currency: this.props.stockInfo.currency,
-		}
-		this.state.marketState === 'CLOSED' ? this.marketColor = 'red' : this.marketColor = 'green';
-		this.userInfo
-	}
-
-	componentDidMount() {
-		console.log('lolvava');
-		fetch('/get_user_info')
-		.then(response => response.json())
-		.then(data => {
-			this.userInfo = data;
-			this.setState(() => ({
-				balance: data.balance,
-				profits: data.profits,
-				losses: data.losses
-			}))
-		})
-	}
-
-	buyStock = () => {
-		console.log('buy stock initiated!');
-		ReactDOM.render(<BuySellPopup userInfo={this.userInfo} stockInfo={this.props.stockInfo} />, document.querySelector('#popup-container'));
-	}
-	render() {
-		return (
-			<div className="stock-chart-data" id="additional-data">
-				<ul>
-					<div className="additional-data-children">Market State : <font color={this.marketColor}> {this.state.marketState}</font></div>
-					<div className="additional-data-children">Regular Market Range: <font color="white"> {this.state.regularMarketDayRange} {this.state.currency}</font></div>
-					<div className="additional-data-children">Regular Market Low: <font color="red"> {this.state.regularMarketDayLow} {this.state.currency}</font></div>
-					<div className="additional-data-children">Regular Market High: <font color="green"> {this.state.regularMarketDayHigh} {this.state.currency}</font></div>
-					<div className="additional-data-children">Two Hundred Day Average: <font color="white"> {this.state.twoHundredDayAverage} {this.state.currency}</font></div>
-					<div className="additional-data-children">Market Cap: <font color="white"> {this.state.marketCap} {this.state.currency}</font></div>
-					<div className="additional-data-children" id="buy-sell-button-div">
-						<button onClick={this.buyStock} className="buy-button" id="buy-button">Buy</button>
-						<button onClick={this.sellStock} className="sell-button"  id="sell-button">Sell</button>
-					</div>
-				</ul>
-
-			</div>
-		)
-	}
-}
-
-class StockInfo extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {}
-		this.priceColor = null;
-	}
-
-	componentDidMount() {
-		fetch(`https://yahoo-finance-low-latency.p.rapidapi.com/v6/finance/quote?symbols=${this.props.symbol}`, {
-			"method": "GET",
-			"headers": {
-				"x-rapidapi-key": API_KEY,
-				"x-rapidapi-host": "yahoo-finance-low-latency.p.rapidapi.com"
-			}
-		})
-		.then(response => response.json())
-		.then(data => {
-			console.log(data.quoteResponse.result[0]);
-			let stockInfo = data.quoteResponse.result[0];
-			this.setState(() => ({
-				symbol: stockInfo.symbol,
-				longName: stockInfo.longName,
-				currency: stockInfo.currency,
-				exchangeTimezoneShortName: stockInfo.exchangeTimezoneShortName,
-				fiftyDayAverage: stockInfo.fiftyDayAverage.toFixed(2),
-				fullExchangeName: stockInfo.fullExchangeName,
-				region: stockInfo.region,
-				regularMarketChange: stockInfo.regularMarketChange.toFixed(4)	,
-				regularMarketChangePercent: stockInfo.regularMarketChangePercent.toFixed(4),
-				regularMarketPreviousClose: stockInfo.regularMarketPreviousClose,
-				regularMarketPrice: stockInfo.regularMarketPrice.toFixed(2)
-			}));
-			ReactDOM.render(<AdditionalInfo stockInfo={stockInfo} />, document.querySelector('#stock-additional-data'));
-		})
-	}
-
-	render() {
-		this.state.regularMarketChange < 0 ? this.priceColor = 'red' : this.priceColor = 'green';
-		return (
-			<table id="stock-info-table">
-				<thead>
-					<tr>
-						<td className="stock-info-upper-row" id="stock-info-title">
-							{this.state.symbol} - <font>{this.state.longName}</font>
-						</td>
-						<td className="stock-info-upper-row" id="stock-info-regular-price">
-							{this.state.regularMarketPrice} <font>{this.state.currency}</font>
-						</td>
-						<td className="stock-info-upper-row" id="stock-info-previous-close">
-							{this.state.regularMarketPreviousClose} <font>{this.state.currency}</font>
-						</td>
-						<td className="stock-info-upper-row" id="stock-info-fifty-day-average">
-							{this.state.fiftyDayAverage} <font>{this.state.currency}</font>
-						</td>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td className="stock-info-lower-row" id="stock-info-exchange">
-							{this.state.fullExchangeName}  {this.state.region} ({this.state.exchangeTimezoneShortName})
-						</td>
-						<td className="stock-info-lower-row" id="stock-info-market-change">
-							<font color={this.priceColor}>
-								{this.state.regularMarketChange > 0 ? ('+') : (null)}
-								{this.state.regularMarketChange} ({this.state.regularMarketChangePercent}%)</font>
-						</td>
-						<td className="stock-info-lower-row">	
-							<font color='gray'>Previous Market Close</font>
-						</td>
-						<td className="stock-info-lower-row" id="stock-info-fifty-lower">
-							<font color='gray'>Fifty Day Average</font>
-						</td>
-					</tr>
-				</tbody>
-			</table>
-		)
-	}
-}
-
-class Autocomplete extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			suggestions: null
-		}
-	}
-	handleChange = (event) => {
-		let elementID = event.target.id
-		let keyword = String(event.target.value)
-		let searchIcon = document.querySelector('#top-bar-search-icon');
-		console.log(keyword.length)
-		if (keyword !== '') {
-			searchIcon.style.filter = "brightness(100%)";
-			let stockList = [];
-			fetch(`https://apidojo-yahoo-finance-v1.p.rapidapi.com/auto-complete?q=${keyword}&region=US`, {
-				"method": "GET",
-				"headers": {
-					"x-rapidapi-key": API_KEY,
-					"x-rapidapi-host": "apidojo-yahoo-finance-v1.p.rapidapi.com"
-				}
-			})
-			.then(response => response.json())
-			.then(data => {
-				let new_keyword = document.querySelector(`#${elementID}`).value;
-				if (new_keyword !== '') {
-					data.quotes.forEach(stock => {
-						let para = (<a key={stock.symbol} className="search-suggestion-links" href={`/stock/${stock.symbol}`}>
-							<div className="search-suggestion-link-div">
-								{stock.symbol}  -  <font className="search-stock-longname">{stock.longname}</font>
-							</div>
-						</a>)
-						stockList.push(para)
-					})
-					this.setState(() => ({
-						suggestions: <div id="search-suggestions">{stockList}</div>
-					}))
-				}
-			})
-		}
-		else {
-			this.handleFocusOut();
-			searchIcon.style.filter = "brightness(45%)"
-		}
-	}
-
-	handleFocusOut = () => {
-		setTimeout(() => {
-			this.setState(() => ({
-				suggestions: null
-			}))
-		}, 200)
-	}
-
-	 render() {
-		 return (
-			 <div>
-				<div id="top-bar-search">
-					<input onFocus={event=> this.handleChange(event)} onChange={event => this.handleChange(event)} onBlur={this.handleFocusOut} className="search-components" id="top-bar-search-bar" type="text" placeholder="Search"/>
-					<img src={searchIcon} className="search-components" id="top-bar-search-icon"/>
-				</div>
-				{this.state.suggestions}
-			</div>
-		 )
-	 }
- }
-
-class IndexStocks extends React.Component {
+// Displays indexes markets in the index page (NSE and BSE).
+ class IndexStocks extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -420,6 +277,7 @@ class IndexStocks extends React.Component {
 			NSEmarketChangePercent: this.props.NSEdata.regularMarketChangePercent.fmt,
 			NSEmarketPreviousClose: this.props.NSEdata.regularMarketPreviousClose.raw,
 		}
+
 		if (this.state.BSEmarketChange < 0) {
 			this.BSEpriceColor = "red";
 		}
@@ -429,6 +287,8 @@ class IndexStocks extends React.Component {
 		(this.state.NSEmarketChange < 0) ? (this.NSEpriceColor = "red") : (this.NSEpriceColor = "green");
 		(this.state.NSEmarketPreviousClose > this.state.NSEmarketPrice) ? (this.NSEprevColor = "rgb(0, 88, 0)") : (this.NSEprevColor = "rgb(146, 1, 1)");
 		(this.state.BSEmarketPreviousClose > this.state.BSEmarketPrice) ? (this.BSEprevColor = "rgb(0, 88, 0)") : (this.BSEprevColor = "rgb(146, 1, 1)");
+		
+		// To display fewer stats for smaller screensize.
 		if (window.innerWidth > 1600) {
 			this.desktopSite = true
 		}
@@ -474,6 +334,43 @@ class IndexStocks extends React.Component {
 			</table>
 		)
 	}
+}
+
+// Displays notification at the bottom-right.
+class NotificationPopup extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			title: this.props.info.title,
+			content: this.props.info.content,
+			titleColor: this.props.info.titleColor
+		}
+	}
+
+	render () {
+
+		// Starts the close animation after 4 seconds.
+		setTimeout(() => {
+			let notificationPopup = document.querySelector('#notification-popup');
+			notificationPopup.style.animationName = 'slide_out';
+			notificationPopup.style.animationFillMode = 'backwards';
+		}, 4000)
+
+		// Closes the popup after 5 seconds.
+		setTimeout(() => {
+			ReactDOM.unmountComponentAtNode(document.querySelector('#notification-container'));
+		}, 5000);
+		
+		return (
+			<div id="notification-popup">
+				<div id="notification-title" style={{color: this.state.titleColor}}>
+					{this.state.title}
+				</div>
+				<div id="notification-content">{this.state.content}</div>
+			</div>
+		)
+	}
+
 }
 
 // Table Row Component (each stock in the popular's table)
@@ -664,8 +561,141 @@ class PopularStockTable extends React.Component {
 	}
 }
 
+// Displays the primary stock info in individual stock page.
+class StockInfo extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {}
+		this.priceColor = null;
+	}
+
+	componentDidMount() {
+		fetch(`https://yahoo-finance-low-latency.p.rapidapi.com/v6/finance/quote?symbols=${this.props.symbol}`, {
+			"method": "GET",
+			"headers": {
+				"x-rapidapi-key": API_KEY,
+				"x-rapidapi-host": "yahoo-finance-low-latency.p.rapidapi.com"
+			}
+		})
+		.then(response => response.json())
+		.then(data => {
+			console.log(data.quoteResponse.result[0]);
+			let stockInfo = data.quoteResponse.result[0];
+			this.setState(() => ({
+				symbol: stockInfo.symbol,
+				longName: stockInfo.longName,
+				currency: stockInfo.currency,
+				exchangeTimezoneShortName: stockInfo.exchangeTimezoneShortName,
+				fiftyDayAverage: stockInfo.fiftyDayAverage.toFixed(2),
+				fullExchangeName: stockInfo.fullExchangeName,
+				region: stockInfo.region,
+				regularMarketChange: stockInfo.regularMarketChange.toFixed(4)	,
+				regularMarketChangePercent: stockInfo.regularMarketChangePercent.toFixed(4),
+				regularMarketPreviousClose: stockInfo.regularMarketPreviousClose,
+				regularMarketPrice: stockInfo.regularMarketPrice.toFixed(2)
+			}));
+			ReactDOM.render(<AdditionalInfo stockInfo={stockInfo} />, document.querySelector('#stock-additional-data'));
+		})
+	}
+
+	render() {
+		this.state.regularMarketChange < 0 ? this.priceColor = 'red' : this.priceColor = 'green';
+		return (
+			<table id="stock-info-table">
+				<thead>
+					<tr>
+						<td className="stock-info-upper-row" id="stock-info-title">
+							{this.state.symbol} - <font>{this.state.longName}</font>
+						</td>
+						<td className="stock-info-upper-row" id="stock-info-regular-price">
+							{this.state.regularMarketPrice} <font>{this.state.currency}</font>
+						</td>
+						<td className="stock-info-upper-row" id="stock-info-previous-close">
+							{this.state.regularMarketPreviousClose} <font>{this.state.currency}</font>
+						</td>
+						<td className="stock-info-upper-row" id="stock-info-fifty-day-average">
+							{this.state.fiftyDayAverage} <font>{this.state.currency}</font>
+						</td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td className="stock-info-lower-row" id="stock-info-exchange">
+							{this.state.fullExchangeName}  {this.state.region} ({this.state.exchangeTimezoneShortName})
+						</td>
+						<td className="stock-info-lower-row" id="stock-info-market-change">
+							<font color={this.priceColor}>
+								{this.state.regularMarketChange > 0 ? ('+') : (null)}
+								{this.state.regularMarketChange} ({this.state.regularMarketChangePercent}%)</font>
+						</td>
+						<td className="stock-info-lower-row">	
+							<font color='gray'>Previous Market Close</font>
+						</td>
+						<td className="stock-info-lower-row" id="stock-info-fifty-lower">
+							<font color='gray'>Fifty Day Average</font>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		)
+	}
+}
+
+// Displays individual news related to current stock.
+class StockNewsChild extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			title: this.props.newsInfo.title.replace('&#39;', "'"),
+			summary: this.props.newsInfo.summary,
+			author_name: this.props.newsInfo.author_name,
+			thumbnail: this.props.newsInfo.thumbnail
+		}
+	}
+
+	render() {
+		return (
+			<div className="stock-news-info">
+				<div className="stock-news-thumbnail-div">
+				<img className="stock-news-thumbnail" src={this.state.thumbnail}></img>
+				</div>
+				<div><font className="news-title">{this.state.title}</font></div>
+				<div><font className="news-author">by {this.state.author_name}</font></div>
+			</div>
+		)
+	}
+}
+
+
+// Displays stocknews in individual stock page.
+class StockNewsParent extends React.Component {
+	constructor(props) {
+		super(props);
+		this.newsChildrenList = []
+		this.props.newsChildren.forEach(news => {
+			this.newsChildrenList.push(
+				<StockNewsChild key={news.id} newsInfo={news} />
+			)	
+		});
+		this.state = {
+			newsChildrenData: this.newsChildrenList
+		}
+	}
+
+	render() {
+		return (
+			<div id="stock-news-component">
+				{this.state.newsChildrenData}
+			</div>
+		)
+	}
+
+}
+
+// Render the autocomplete div for  the search bar.
 ReactDOM.render(<Autocomplete />, document.querySelector('#top-bar-search-div'))
 
+// To get CSRF token from cookies.
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
