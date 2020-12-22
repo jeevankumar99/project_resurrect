@@ -415,8 +415,8 @@ body {
     transform: translate(-50%, -50%);
     z-index: 10;
     background-color: rgb(32, 32, 32);
-    width: 25%;
     height: 50vh;
+    width: 350px;
     border-radius: 15px;
     border: 1px solid rgb(70, 70, 70);
     padding: 10px;
@@ -513,4 +513,79 @@ body {
     font-size: medium;
     margin-right: auto;
 }
+
+#popup-total {
+    border-top: 0.5px solid rgb(163, 163, 163);
+    padding: 4px;
+    border-bottom: 0.5px solid rgb(163, 163, 163);
+    margin-top: 40px;
+}
+
+#popup-total-figure {
+    font-size: 24px;
+    position: fixed;
+    right: 12px;
+}
+
+#confirm-purchase-button {
+    position: fixed;
+    bottom: 15px;
+    left: 15px;
+    right: 15px;
+    border-radius: 15px;
+    background-color: rgb(37, 153, 37);
+    color: white;
+    width: 90%;
+    height: 35px;
+    font-size: large;
+    border: 0px;
+}
+
+#confirm-purchase-button:hover {
+    outline: none;
+    background-color: rgb(46, 184, 46);
+    cursor: pointer;
+}
+
+@keyframes slide_in {
+    from {
+        right: 0px;
+        width: 20px;
+        color: rgb(32, 32, 32);
+    }
+    to {
+        right: 30px;
+        width: 270px;
+        color: white;
+    }
+}
+
+@keyframes slide_out {
+    from {
+        right: 30px;
+        width: 270px;
+    }
+    to {
+        right: 0px;
+        width: 20px;
+    }
+}
+
+#notification-popup {
+    position: fixed;
+    bottom: 30px;
+    height: 70px;
+    right: 30px;
+    width: 270px;
+    padding: 10px;
+    background-color: rgb(32, 32, 32);
+    border: 1px solid green;
+    border-radius: 10px;
+    animation-name: slide_in;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+    overflow: hidden;
+}
+
+
 
