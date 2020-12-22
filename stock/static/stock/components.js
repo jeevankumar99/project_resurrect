@@ -23,7 +23,7 @@ class NotificationPopup extends React.Component {
 		}, 5000);
 		return (
 			<div id="notification-popup">
-				<div id="notification-title" style={{color: 'green'}}>
+				<div id="notification-title" style={{color: this.state.titleColor}}>
 					{this.state.title}
 				</div>
 				<div id="notification-content">{this.state.content}</div>
@@ -39,7 +39,7 @@ class BuySellPopup extends React.Component {
 		super(props);
 		this.state = {
 			symbol: this.props.stockInfo.symbol,
-			shortName: this.props.stockInfo.shortName,
+			longName: this.props.stockInfo.longName,
 			regularMarketPrice: this.props.stockInfo.regularMarketPrice.toFixed(2),
 			currency: this.props.stockInfo.currency,
 			balance: this.props.userInfo.balance,
@@ -97,7 +97,7 @@ class BuySellPopup extends React.Component {
 			let info = {
 				title: 'Purchase Successful!',
 				content: `You bought ${this.state.quantity} stocks of ${this.state.symbol} for ${this.state.total}`,
-				colorTitle: 'green'
+				titleColor: 'rgb(37, 153, 37)'
 			}
 			this.closePopup();
 			ReactDOM.render(<NotificationPopup info={info} />, document.querySelector('#notification-container'));
@@ -117,6 +117,9 @@ class BuySellPopup extends React.Component {
 						<div id='popup-close-button-div'>
 							<button onClick={this.closePopup} id="popup-close-button">X</button>
 						</div>
+					</div>
+					<div id="popup-long-name">
+						 {this.state.longName}
 					</div>
 					<div className="popup-stock-info" id="popup-current-price">
 						<font className="popup-span">Current Price:</font> {this.state.regularMarketPrice} {this.state.currency}
@@ -503,6 +506,17 @@ class PopularStockData extends React.Component {
 		this.userLoggedIn = document.querySelector('#user-logged-in').innerHTML;
 	}
 
+	buyStock = (event) => {
+		event.stopPropagation();
+		console.log('buy clicked');
+		fetch('/get_user_info')
+		.then(response => response.json())
+		.then(data => {
+			this.userInfo = data;
+			ReactDOM.render(<BuySellPopup userInfo={data} stockInfo={this.props.stock} />, document.querySelector('#popup-container'));
+		})
+	}
+
 	componentDidMount() {
 		
 		// Get watchlist data only if user is logged in
@@ -592,7 +606,9 @@ class PopularStockData extends React.Component {
 				<td className="table-data" className="table-open">$ {this.state.marketOpen}</td>
 				<td className="table-data" className="table-high">$ {this.state.dayHigh}</td>
 				<td className="table-data" className="table-low">$ {this.state.dayLow}</td>
-				<td className="table-data" className="table-close">$ {this.state.previousClose}</td>
+				<td className="table-data" className="table-close">
+					<button onClick={event => this.buyStock(event)} id="buy-stock-index-page">Buy</button>
+				</td>
 			</tr>
 		)
 	}
@@ -637,7 +653,7 @@ class PopularStockTable extends React.Component {
 						<th className="table-headers" id="table-open">Market Open</th>
 						<th className="table-headers" id="table-high">Day High</th>
 						<th className="table-headers" id="table-low">Day Low</th>
-						<th className="table-headers" id="table-close">Previous Close</th>
+						<th className="table-headers" id="table-close">Buy / Sell</th>
 					</tr>
 				</thead>
 				<tbody>

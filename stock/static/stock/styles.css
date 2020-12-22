@@ -253,6 +253,24 @@ body {
     width: 23px;
 }
 
+#buy-stock-index-page {
+    width: 50px;
+    height: 20px;
+    color: white;
+    background-color: rgb(37, 153, 37);
+    border: 0px;
+    border-radius: 10px;
+}
+
+#buy-stock-index-page:hover {
+    background-color: rgb(46, 184, 46);
+    cursor: pointer;
+}
+
+#buy-stock-index-page:focus {
+    outline: none;
+}
+
 /* scrollbar of popular stocks */
 
 ::-webkit-scrollbar {
@@ -443,11 +461,12 @@ body {
     display: inline;
 }
 
+
 #popup-header-div {
     padding-bottom: 10px;
     display: flex;
     border-bottom: 1px solid rgb(70, 70, 70);
-    margin-bottom: 25px;
+    margin-bottom: 10px;
 }
 
 #popup-close-button-div {
@@ -465,6 +484,13 @@ body {
     cursor: pointer;
 
 }
+
+#popup-long-name {
+    text-align: center;
+    font-size: large;
+    margin-bottom: 20px;
+}
+
 #popup-quantity-selector {
     display: flex;
 }
@@ -586,6 +612,8 @@ body {
     animation-fill-mode: forwards;
     overflow: hidden;
 }
+
+
 
 
 
