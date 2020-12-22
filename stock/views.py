@@ -96,16 +96,26 @@ def purchase_stock(request):
         stock_symbol = data.get('stockSymbol')
         quantity = data.get('quantity')
         balance = data.get('balance')
+        total = data.get('total')
+        current_price = data.get('currentPrice')
         user = User.objects.get(username=request.user)
         user.balance = balance
         user.save()
+        Transaction.objects.create(
+            user=user,
+            stock_symbol=stock_symbol,
+            quantity=quantity,
+            current_price=current_price
+        )
         print(stock_symbol, quantity, balance)
         try:
            existing_portfolio = Portfolio.objects.get(user=user, stock_symbol=stock_symbol)
         except Portfolio.DoesNotExist:
-            Portfolio.objects.create(user=user, stock_symbol=stock_symbol, quantity=quantity)
+            Portfolio.objects.create(user=user, stock_symbol=stock_symbol, quantity=quantity, total_spent=total)
             return JsonResponse({'message': "Stock purchased"}, status=200)
         existing_portfolio.quantity += quantity
+        total_spent = float(existing_portfolio.total_spent)
+        existing_portfolio.total_spent = total_spent + total
         existing_portfolio.save()
         return JsonResponse({'message' : 'Stock quantity updated'}, status=200)
     else:

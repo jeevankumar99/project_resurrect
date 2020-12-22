@@ -192,7 +192,9 @@ class Autocomplete extends React.Component {
 			body: JSON.stringify({
 				stockSymbol: this.state.symbol,
 				quantity: this.state.quantity,
-				balance: this.state.balance - this.state.total
+				balance: this.state.balance - this.state.total,
+				total: this.state.total,
+				currentPrice: this.state.regularMarketPrice
 			}),
 			headers: {'X-CSRFToken': csrf_token}
 		})
@@ -558,6 +560,19 @@ class PopularStockTable extends React.Component {
 				</tbody>
 			</table>
 		)
+	}
+}
+
+class ProfileInfo extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			username: this.props.userInfo.username,
+			balance: this.props.userInfo.balance,
+			profits: this.props.userInfo.profits,
+			losses: this.props.userInfo.losses,
+
+		}
 	}
 }
 

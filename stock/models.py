@@ -18,10 +18,21 @@ class Portfolio(models.Model):
     stock_symbol = models.CharField(blank=False, max_length=12)
     user = models.ForeignKey("User", on_delete=models.CASCADE, related_name="portfolio_user")
     quantity = models.PositiveIntegerField(blank=False)
+    total_spent = models.DecimalField(decimal_places=2, blank=False, default=0, max_digits=20)
 
     def __str__(self):
         return (f'{self.user.username} has {self.quantity} {self.stock_symbol} stocks')
 
+
+class Transaction(models.Model):
+    user = models.ForeignKey("User", on_delete=models.CASCADE, related_name="transaction_user")
+    stock_symbol = models.CharField(blank=False, max_length=12)
+    quantity = models.PositiveIntegerField(blank=False)
+    timestamp = models.TimeField(auto_now_add=True)
+    current_price = models.DecimalField(decimal_places=2, blank=False, max_digits=15)
+
+    def __str__(self):
+        return (f'{self.user.username} bought {self.quantity} {self.stock_symbol} at {self.current_price}')
 
 class Watchlist(models.Model):
     user = models.ForeignKey("User", on_delete=models.CASCADE, related_name="watchlist_user")
