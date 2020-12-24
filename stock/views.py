@@ -74,6 +74,15 @@ def watchlist_view(request):
 def index(request):
     return render(request, "stock/index.html")
 
+def get_portfolios(request):
+    if request.method == "GET":
+        user = User.objects.get(username=request.user)
+        portfolios = Portfolio.objects.filter(user=user)
+        serialized_portfolios = [portfolio.serialize() for portfolio in portfolios]
+        return JsonResponse(serialized_portfolios, safe=False)
+    else:
+        return JsonResponse({'message': "GET request needed"}, status=400)
+
 def login_view(request):
     if request.method == "POST":
         username = request.POST["username"]

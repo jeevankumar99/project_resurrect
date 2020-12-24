@@ -563,6 +563,121 @@ class PopularStockTable extends React.Component {
 	}
 }
 
+
+class PortfolioStockData extends React.Component {
+	constructor(props) {
+		super(props);
+		let profitLosses = this.props.portfolio.totalSpent - (this.props.portfolio.currentPrice * this.props.portfolio.quantity)
+		this.state = {
+			symbol: this.props.portfolio.symbol,
+			longName: this.props.portfolio.longName,
+			quantity: this.props.portfolio.quantity,
+			currentPrice: this.props.portfolio.currentPrice,
+			totalSpent: this.props.portfolio.totalSpent,
+			profitLosses: profitLosses.toFixed(2),
+			isWatchlistPage: this.props.portfolio.isWatchlistPage,
+		}
+
+		// To change the color depending on rise and fall of price.
+		if (profitLosses > 0) {
+			this.priceColor = "green";
+		}
+		else {
+			this.priceColor = "red";
+		}
+		
+		// Check if user is logged in.
+		this.userLoggedIn = document.querySelector('#user-logged-in').innerHTML;
+	}
+
+	buyStock = (event) => {
+		event.stopPropagation();
+		console.log('buy clicked');
+		fetch('/get_user_info')
+		.then(response => response.json())
+		.then(data => {
+			this.userInfo = data;
+			ReactDOM.render(<BuySellPopup userInfo={data} stockInfo={this.props.stock} />, document.querySelector('#popup-container'));
+		})
+	}
+
+	componentDidMount() {
+		
+		// Get current stock price using fetch
+
+	}
+
+	render () {
+		return (
+			<tr onClick={() => window.location.href = `stock/${this.state.symbol}`} className="table-row-data" id={`table-row-${this.state.symbol}`}>
+				<td className="table-data" className="table-symbol">
+					{this.state.symbol}
+				</td>
+				<td className="table-data" className="table-long-name">
+					{this.state.longName}
+				</td>
+				<td className="table-data" className="table-quantity">{this.state.quantity}</td>
+				<td className="table-data" className="table-total-spent">$ {this.state.totalSpent}</td>
+				<td className="table-data" className="table-current-price">$ {this.state.currentPrice}</td>
+				<td className="table-data" className="table-profit-loss">
+					$ <font color={this.priceColor}>{this.state.profitLosses}</font>
+				</td>
+				<td className="table-data" className="table-buy-sell">
+					<button onClick={event => this.buyStock(event)} id="buy-stock-index-page">Buy</button>
+				</td>
+			</tr>
+		)
+	}
+}
+
+
+class PortfolioStockTable extends React.Component {
+	constructor(props) {
+		super(props);
+		this.portfolios = []
+		this.props.portfolios.forEach(portfolio => {
+			this.portfolios.push(<PortfolioStockData 
+				key={portfolio.symbol} 
+				portfolio={portfolio}
+				clickHandler={this.removeRow} />)
+		})
+		console.log(this.portfolios)
+		this.state = {
+			portfolios: this.portfolios
+		}
+	}
+
+	// Removes stock from watchlist table.
+	removeRow = (symbol) => {
+		let filtered = this.state.portfolios.filter(portfolio => portfolio.key !== symbol);
+		this.setState(() => ({
+			stocksData: filtered
+		}))
+	}
+
+	render() {
+		console.log(this.state.portfolios)
+		return (
+			<table className="popular-stocks-table">
+				<thead>
+					<tr id="all-table-headers">
+						<th className="table-headers" id="table-symbol">Symbol</th>
+						<th className="table-headers" id="table-long-name">Long Name</th>
+						<th className="table-headers" id="table-quantity">Quantity</th>
+						<th className="table-headers" id="table-current-price">Total Spent</th>
+						<th className="table-headers" id="table-total-spent">Current Price</th>
+						<th className="table-headers" id="table-profit-loss">Profit/Loss</th>
+						<th className="table-headers" id="table-buy-sell">Buy / Sell</th>
+					</tr>
+				</thead>
+				<tbody>
+					{this.state.portfolios}
+				</tbody>
+			</table>
+		)
+	}
+}
+
 class ProfileInfo extends React.Component {
 	constructor(props) {
 		super(props);

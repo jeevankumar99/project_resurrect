@@ -23,16 +23,24 @@ class Portfolio(models.Model):
     def __str__(self):
         return (f'{self.user.username} has {self.quantity} {self.stock_symbol} stocks')
 
+    def serialize(self):
+        return {
+            'symbol': self.stock_symbol,
+            'quantity': self.quantity,
+            'totalSpent': self.total_spent,
+        }
+
 
 class Transaction(models.Model):
     user = models.ForeignKey("User", on_delete=models.CASCADE, related_name="transaction_user")
     stock_symbol = models.CharField(blank=False, max_length=12)
     quantity = models.PositiveIntegerField(blank=False)
     timestamp = models.TimeField(auto_now_add=True)
-    current_price = models.DecimalField(decimal_places=2, blank=False, max_digits=15)
+    price_at_purchase = models.DecimalField(decimal_places=2, blank=False, max_digits=15)
 
     def __str__(self):
         return (f'{self.user.username} bought {self.quantity} {self.stock_symbol} at {self.current_price}')
+
 
 class Watchlist(models.Model):
     user = models.ForeignKey("User", on_delete=models.CASCADE, related_name="watchlist_user")
