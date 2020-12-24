@@ -21,6 +21,7 @@
             <div id="top-bar-search-div">
             </div>
             {% if user.is_authenticated %}
+                <a class="top-bar-link" id="top-bar-portfolio" href="{% url 'my_portfolio' %}">My Portfolio</a>
                 <a class="top-bar-link" id="top-bar-profile" href="{% url 'my_profile' %}">{{ user }}</a>
                 <a class="top-bar-link" id="top-bar-logout" href="{% url 'logout' %}">Logout</a>
                 <p style="display: none" id="user-logged-in">true</p>

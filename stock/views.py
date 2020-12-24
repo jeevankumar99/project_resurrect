@@ -124,6 +124,9 @@ def purchase_stock(request):
 def profile_view(request):
     return render(request, "stock/profile.html")
 
+def my_portfolio(request):
+    return render(request, "stock/portfolio.html")
+
 def register_view(request):
     if request.method == "POST":
         username = request.POST["username"]

@@ -17,12 +17,12 @@ body {
 
 #top-nav-bar {
     display: flex;
+    top: 0px;
     background-color: rgb(32, 32, 32);
     width: 100%;
     height: 60px;
     font-weight: bold;
     border-bottom: 1px solid rgb(70, 70, 70);
-    margin-top: -80px;
     position: fixed;
     z-index: 10;
 }
@@ -43,7 +43,7 @@ body {
     cursor: pointer;
 }
 
-#top-bar-profile, #top-bar-login {
+#top-bar-login, #top-bar-portfolio {
     margin-left: auto;
 }
 
@@ -612,6 +612,10 @@ body {
     animation-fill-mode: forwards;
     overflow: hidden;
 }
+
+/* portfolio.html */
+
+<
 
 
 

@@ -574,6 +574,7 @@ class ProfileInfo extends React.Component {
 
 		}
 	}
+
 }
 
 // Displays the primary stock info in individual stock page.
