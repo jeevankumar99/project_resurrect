@@ -172,7 +172,7 @@ body {
 
 /* Popular stocks table */
 
-#popular-stocks, #portfolio-stocks {
+#popular-stocks, #portfolio-stocks, #transactions-table {
     display: flex;
     bottom: 0px;
     margin: 30px auto 10px auto;
@@ -217,7 +217,7 @@ body {
     text-align: center;
 }
 
-.table-quantity, .table-total-spent, .table-current-price, .table-profit-loss, .table-buy-sell {
+.table-quantity, .table-total-spent, .table-current-price, .table-profit-loss, .table-buy-sell, .table-timestamp, .table-price-bought {
     text-align: center;
 }
 
@@ -619,17 +619,17 @@ body {
 
 /* portfolio.html */
 
-#portfolio-title-container {
+#portfolio-title-container, #transactions-title-container {
     width: 70%;
     margin: 100px auto 0px auto;
 }
 
-#portfolio-title {
+#portfolio-title, #transactions-title {
     margin-left: 6px;
     margin-top: 20px;
 }
 
-#portfolio-stocks {
+#portfolio-stocks, #transactions-table {
     margin: 10px auto 0px auto;
 }
 

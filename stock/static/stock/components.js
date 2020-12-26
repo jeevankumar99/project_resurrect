@@ -1,6 +1,6 @@
 const searchIcon = "/static/stock/images/search-icon2.png";
 const watchlistIcon = "/static/stock/images/watchlist-icon.png";
-const API_KEY = "dd19c41ffamshb752f586ea42d17p1b3226jsn5660aab99952";
+const API_KEY = "906765926amshebc39f8abc4333cp190d7bjsnee05cad1a6d0";
 
 
 // Additional Stock Info in the individual stock page.
@@ -79,21 +79,22 @@ class Autocomplete extends React.Component {
 		if (keyword !== '') {
 			searchIcon.style.filter = "brightness(100%)";
 			let stockList = [];
-			fetch(`https://apidojo-yahoo-finance-v1.p.rapidapi.com/auto-complete?q=${keyword}&region=US`, {
+			fetch(`https://yahoo-finance-low-latency.p.rapidapi.com/v6/finance/autocomplete?query=${keyword}&lang=en`, {
 				"method": "GET",
 				"headers": {
 					"x-rapidapi-key": API_KEY,
-					"x-rapidapi-host": "apidojo-yahoo-finance-v1.p.rapidapi.com"
+					"x-rapidapi-host": "yahoo-finance-low-latency.p.rapidapi.com"
 				}
 			})
 			.then(response => response.json())
 			.then(data => {
+				console.log(data);
 				let new_keyword = document.querySelector(`#${elementID}`).value;
 				if (new_keyword !== '') {
-					data.quotes.forEach(stock => {
+					data.ResultSet.Result.forEach(stock => {
 						let para = (<a key={stock.symbol} className="search-suggestion-links" href={`/stock/${stock.symbol}`}>
 							<div className="search-suggestion-link-div">
-								{stock.symbol}  -  <font className="search-stock-longname">{stock.longname}</font>
+								{stock.symbol}  -  <font className="search-stock-longname">{stock.name}</font>
 							</div>
 						</a>)
 						stockList.push(para)
@@ -880,7 +881,7 @@ class TransactionTable extends React.Component {
 	
 	render() {
 		return (
-			<table className="popular-stock-table">
+			<table className="popular-stocks-table">
 				<thead>
 					<tr id="all-table-headers">
 					<th className="table-headers" id="table-symbol">Symbol</th>

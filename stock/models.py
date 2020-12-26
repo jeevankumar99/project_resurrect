@@ -44,12 +44,13 @@ class Transaction(models.Model):
         return (f'{self.user.username} bought {self.quantity} {self.stock_symbol} at {self.price_at_purchase}')
 
     def serialize(self):
+        print(self.timestamp)
         return {
             'transactionID': self.id,
             'symbol': self.stock_symbol,
             'longName': self.long_name,
             'quantity': self.quantity,
-            'timestamp': self.timestamp,
+            'timestamp': self.timestamp.strftime("%a, %d %b %y, %I:%M %p"),
             'priceAtPurchase': self.price_at_purchase
         }
 
