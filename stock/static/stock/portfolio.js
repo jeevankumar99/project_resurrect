@@ -18,7 +18,6 @@ fetch('/get_portfolios')
             while (data.length > 0) {
                 formattedData.push(data.splice(0, 10))
             }
-            console.log(formattedData)
             // Add stocks in a (AAPL,TSLA,MRSFT) format to get quotes
             formattedData.forEach(chunksOfTen => {
                 let tenStockSymbols = '';
@@ -54,12 +53,11 @@ fetch('/get_portfolios')
             requests.push(fetch(`https://yahoo-finance-low-latency.p.rapidapi.com/v6/finance/quote?symbols=${chunksOfTen}`, {
                 "method": "GET",
                 "headers": {
-                    "x-rapidapi-key": "479462f012mshe76e1e5aaa27ccdp1567d6jsnd0b820804b3b",
+                    "x-rapidapi-key": API_KEY,
                     "x-rapidapi-host": "yahoo-finance-low-latency.p.rapidapi.com"
                 }
             }))
         }) 
-        console.log(requests)
 
         // Wait for all promises to complete before proceeding
         Promise.all(requests)

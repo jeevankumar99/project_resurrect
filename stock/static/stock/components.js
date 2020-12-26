@@ -1,6 +1,6 @@
 const searchIcon = "/static/stock/images/search-icon2.png";
 const watchlistIcon = "/static/stock/images/watchlist-icon.png";
-const API_KEY = "906765926amshebc39f8abc4333cp190d7bjsnee05cad1a6d0";
+const API_KEY = "dd19c41ffamshb752f586ea42d17p1b3226jsn5660aab99952";
 
 
 // Additional Stock Info in the individual stock page.
