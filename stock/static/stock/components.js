@@ -191,6 +191,7 @@ class Autocomplete extends React.Component {
 			method: "POST", 
 			body: JSON.stringify({
 				stockSymbol: this.state.symbol,
+				longName: this.state.longName,
 				quantity: this.state.quantity,
 				balance: this.state.balance - this.state.total,
 				total: this.state.total,
@@ -838,6 +839,63 @@ class StockNewsParent extends React.Component {
 		)
 	}
 
+}
+
+class TransactionData extends React.Component {
+	render() {
+		return (
+			<tr className="table-row-data">
+				<td className="table-data" className="table-symbol">
+					{this.props.transactionInfo.symbol}
+				</td>
+				<td className="table-data" className="table-long-name">
+					{this.props.transactionInfo.longName}
+				</td>
+				<td className="table-data" className="table-quantity">
+					{this.props.transactionInfo.quantity}
+				</td>
+				<td className="table-data" className="table-timestamp">
+					{this.props.transactionInfo.timestamp}</td>
+				<td className="table-data" className="table-price-bought">
+					$ {this.props.transactionInfo.priceAtPurchase}
+				</td>
+			</tr>
+		)
+	}
+}
+
+class TransactionTable extends React.Component {
+	constructor(props) {
+		super(props);
+		this.transactionData = [];
+		this.props.transactionData.forEach(transactionInfo => {
+			this.transactionData.push(<TransactionData 
+				transactionInfo={transactionInfo} 
+				key={transactionInfo.transactionID} />)
+		})
+		this.state = {
+			transactionData: this.transactionData
+		}
+	}
+	
+	render() {
+		return (
+			<table className="popular-stock-table">
+				<thead>
+					<tr id="all-table-headers">
+					<th className="table-headers" id="table-symbol">Symbol</th>
+						<th className="table-headers" id="table-long-name">Long Name</th>
+						<th className="table-headers" id="table-quantity">Quantity</th>
+						<th className="table-headers" id="table-timestamp">Timestamp</th>
+						<th className="table-headers" id="table-price-at-purchase">Price Bought</th>
+					</tr>
+				</thead>
+				<tbody>
+					{this.state.transactionData}
+				</tbody>
+			</table>
+		)
+	}
 }
 
 // Render the autocomplete div for  the search bar.

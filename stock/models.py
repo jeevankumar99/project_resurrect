@@ -32,14 +32,26 @@ class Portfolio(models.Model):
 
 
 class Transaction(models.Model):
+    id = models.AutoField(primary_key=True)
     user = models.ForeignKey("User", on_delete=models.CASCADE, related_name="transaction_user")
     stock_symbol = models.CharField(blank=False, max_length=12)
+    long_name = models.CharField(blank=False, max_length=100)
     quantity = models.PositiveIntegerField(blank=False)
-    timestamp = models.TimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
     price_at_purchase = models.DecimalField(decimal_places=2, blank=False, max_digits=15)
 
     def __str__(self):
         return (f'{self.user.username} bought {self.quantity} {self.stock_symbol} at {self.price_at_purchase}')
+
+    def serialize(self):
+        return {
+            'transactionID': self.id,
+            'symbol': self.stock_symbol,
+            'longName': self.long_name,
+            'quantity': self.quantity,
+            'timestamp': self.timestamp,
+            'priceAtPurchase': self.price_at_purchase
+        }
 
 
 class Watchlist(models.Model):

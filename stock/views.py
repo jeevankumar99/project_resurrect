@@ -83,6 +83,15 @@ def get_portfolios(request):
     else:
         return JsonResponse({'message': "GET request needed"}, status=400)
 
+def get_transactions(request):
+    if request.method == 'GET':
+        user = User.objects.get(username=request.user)
+        transactions = Transaction.objects.filter(user=user)
+        serialized_transactions = [transaction.serialize() for transaction in transactions]
+        return JsonResponse(serialized_transactions, safe=False)
+    else:
+        return JsonResponse({'error': "only GET request needed"}, status=400)
+
 def login_view(request):
     if request.method == "POST":
         username = request.POST["username"]
@@ -107,14 +116,16 @@ def purchase_stock(request):
         balance = data.get('balance')
         total = data.get('total')
         current_price = data.get('currentPrice')
+        long_name = data.get('longName')
         user = User.objects.get(username=request.user)
         user.balance = balance
         user.save()
         Transaction.objects.create(
             user=user,
             stock_symbol=stock_symbol,
+            long_name=long_name,
             quantity=quantity,
-            price_at_purchase=current_price
+            price_at_purchase=current_price,
         )
         print(stock_symbol, quantity, balance)
         try:
@@ -135,6 +146,9 @@ def profile_view(request):
 
 def my_portfolio(request):
     return render(request, "stock/portfolio.html")
+
+def my_transactions(request):
+    return render(request, "stock/transactions.html")
 
 def register_view(request):
     if request.method == "POST":
