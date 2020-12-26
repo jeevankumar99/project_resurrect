@@ -39,7 +39,7 @@ class Transaction(models.Model):
     price_at_purchase = models.DecimalField(decimal_places=2, blank=False, max_digits=15)
 
     def __str__(self):
-        return (f'{self.user.username} bought {self.quantity} {self.stock_symbol} at {self.current_price}')
+        return (f'{self.user.username} bought {self.quantity} {self.stock_symbol} at {self.price_at_purchase}')
 
 
 class Watchlist(models.Model):

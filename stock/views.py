@@ -114,7 +114,7 @@ def purchase_stock(request):
             user=user,
             stock_symbol=stock_symbol,
             quantity=quantity,
-            current_price=current_price
+            price_at_purchase=current_price
         )
         print(stock_symbol, quantity, balance)
         try:

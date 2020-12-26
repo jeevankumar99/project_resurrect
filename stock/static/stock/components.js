@@ -1,6 +1,6 @@
 const searchIcon = "/static/stock/images/search-icon2.png";
 const watchlistIcon = "/static/stock/images/watchlist-icon.png";
-const API_KEY =  "479462f012mshe76e1e5aaa27ccdp1567d6jsnd0b820804b3b";
+const API_KEY = "906765926amshebc39f8abc4333cp190d7bjsnee05cad1a6d0";
 
 
 // Additional Stock Info in the individual stock page.
@@ -210,6 +210,9 @@ class Autocomplete extends React.Component {
 			}
 			this.closePopup();
 			ReactDOM.render(<NotificationPopup info={info} />, document.querySelector('#notification-container'));
+
+			// To update fields according to purchase in portfolio page.
+			this.props.updateState ? (this.props.updateState(this.state.quantity)) : (null);
 		});
 	}
 
@@ -567,13 +570,14 @@ class PopularStockTable extends React.Component {
 class PortfolioStockData extends React.Component {
 	constructor(props) {
 		super(props);
-		let profitLosses = this.props.portfolio.totalSpent - (this.props.portfolio.currentPrice * this.props.portfolio.quantity)
+		 console.log(this.props.portfolio)
+		let profitLosses = (parseInt(this.props.portfolio.liveStockData.regularMarketPrice) * this.props.portfolio.quantity) - parseInt(this.props.portfolio.totalSpent);
 		this.state = {
 			symbol: this.props.portfolio.symbol,
-			longName: this.props.portfolio.longName,
+			longName: this.props.portfolio.liveStockData.longName,
 			quantity: this.props.portfolio.quantity,
-			currentPrice: this.props.portfolio.currentPrice,
-			totalSpent: this.props.portfolio.totalSpent,
+			currentPrice: parseInt(this.props.portfolio.liveStockData.regularMarketPrice),
+			totalSpent: parseInt(this.props.portfolio.totalSpent),
 			profitLosses: profitLosses.toFixed(2),
 			isWatchlistPage: this.props.portfolio.isWatchlistPage,
 		}
@@ -597,9 +601,22 @@ class PortfolioStockData extends React.Component {
 		.then(response => response.json())
 		.then(data => {
 			this.userInfo = data;
-			ReactDOM.render(<BuySellPopup userInfo={data} stockInfo={this.props.stock} />, document.querySelector('#popup-container'));
+			ReactDOM.render(<BuySellPopup updateState={this.updateState} userInfo={data} stockInfo={this.props.portfolio.liveStockData} />, document.querySelector('#popup-container'));
 		})
 	}
+
+	updateState = (newQuantity) => {
+		let totalQuantity = newQuantity +  this.state.quantity;
+		let newTotalSpent = this.state.totalSpent + (newQuantity * this.state.currentPrice);
+		let newProfitLosses = (totalQuantity * this.state.currentPrice) - newTotalSpent;
+		console.log(newQuantity, newTotalSpent, newProfitLosses)
+		this.setState(() => ({
+			quantity: totalQuantity,
+			totalSpent: newTotalSpent,
+			profitLosses: newProfitLosses
+		}));
+	}
+
 
 	componentDidMount() {
 		

@@ -3,8 +3,8 @@ fetch('/get_portfolios')
 .then(data => {
         
     let listOfTenStockSymbols = []
-    let tenStockSymbols = '';
-
+    let formattedData = [];
+    let tempData = [...data];
     // Yahoo accepts ONLY upto 10 stock queries in one request.
     // Splits watchlist into arrays containg upto 10 stocks.
     if (data.length < 1) {
@@ -18,8 +18,10 @@ fetch('/get_portfolios')
             while (data.length > 0) {
                 formattedData.push(data.splice(0, 10))
             }
+            console.log(formattedData)
             // Add stocks in a (AAPL,TSLA,MRSFT) format to get quotes
             formattedData.forEach(chunksOfTen => {
+                let tenStockSymbols = '';
                 chunksOfTen.forEach((stock, key, stocks) => {
                     if (key === stocks.length - 1) {
                         tenStockSymbols = tenStockSymbols + stock.symbol;
@@ -32,6 +34,7 @@ fetch('/get_portfolios')
             })
         }
         else {
+            let tenStockSymbols = '';
             data.forEach((stock, key, stocks) => {
                 if (key === stocks.length - 1) {
                     tenStockSymbols = tenStockSymbols + stock.symbol;
@@ -45,6 +48,7 @@ fetch('/get_portfolios')
 
         // Start requests
         var requests = [];
+        console.log(listOfTenStockSymbols)
         // To create promise objects for Promise.all
         listOfTenStockSymbols.forEach(chunksOfTen => {
             requests.push(fetch(`https://yahoo-finance-low-latency.p.rapidapi.com/v6/finance/quote?symbols=${chunksOfTen}`, {
@@ -65,12 +69,14 @@ fetch('/get_portfolios')
             
             // Populate table rows with json data and store them locally.
             .then(liveData => {
-                console.log(liveData)
-                for (let i = 0; i < data.length; i++) {
-                    data[i].currentPrice = liveData[0].quoteResponse.result[i].regularMarketPrice;
-                    data[i].longName = liveData[0].quoteResponse.result[i].longName;
-                }
-                ReactDOM.render(<PortfolioStockTable portfolios={data} />, document.querySelector('#portfolio-stocks'));
+                let tempDataIndex = 0;
+                liveData.forEach(liveChunksOfTen => {
+                    liveChunksOfTen.quoteResponse.result.forEach(liveStock => {
+                        tempData[tempDataIndex].liveStockData = liveStock;
+                        tempDataIndex++;
+                    })
+                })
+                ReactDOM.render(<PortfolioStockTable portfolios={tempData} />, document.querySelector('#portfolio-stocks'));
             });
 
     }
