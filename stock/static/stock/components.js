@@ -145,21 +145,38 @@ class Autocomplete extends React.Component {
 			longName: this.props.stockInfo.longName,
 			regularMarketPrice: this.props.stockInfo.regularMarketPrice.toFixed(2),
 			currency: this.props.stockInfo.currency,
-			balance: this.props.userInfo.balance,
+			balance: parseFloat(this.props.userInfo.balance),
 			profits: this.props.userInfo.profits,
 			losses: this.props.userInfo.losses,
 			quantity: 1,
-			total: this.props.stockInfo.regularMarketPrice.toFixed(2)
+			total: this.props.stockInfo.regularMarketPrice,
+			liveBalance: parseFloat(this.props.userInfo.balance),
+			overBalance: false,
 		}
 	}
 
 	// Calculates total based on the current quantity in the input bar
 	calculateTotal = (quantity) => {
 		quantity === 0 ? quantity = 1 : null;
+		let overBalance = false;
+		let confirmButton = document.querySelector('#confirm-purchase-button');
+		if ((this.state.regularMarketPrice * quantity) > this.state.balance) {
+			overBalance = true;
+			confirmButton.disabled = true;
+			console.log('overbalance', confirmButton)
+			confirmButton.style.backgroundColor = 'red';
+		}
+		else {
+			confirmButton.disabled = false;
+			console.log('not overbalance');
+			confirmButton.style.backgroundColor = null;
+		}
 		console.log(quantity)
 		this.setState((state) => ({
 			total: state.regularMarketPrice * quantity,
-			quantity: quantity
+			quantity: quantity,
+			liveBalance: state.balance - (state.regularMarketPrice * quantity),
+			overBalance: overBalance
 		}))
 	}
 
@@ -196,7 +213,7 @@ class Autocomplete extends React.Component {
 				quantity: this.state.quantity,
 				balance: this.state.balance - this.state.total,
 				total: this.state.total,
-				currentPrice: this.state.regularMarketPrice
+				currentPrice: this.state.regularMarketPrice,
 			}),
 			headers: {'X-CSRFToken': csrf_token}
 		})
@@ -250,10 +267,12 @@ class Autocomplete extends React.Component {
 						</div>
 					</div>
 					<div className="popup-stock-info" id="popup-balance">
-						<font className="popup-span">Your Live Balance: $</font>{this.state.balance - this.state.total}
+						<font className="popup-span">Your Live Balance: $</font>{this.state.liveBalance.toFixed(2)}
 					</div>
+					{this.state.overBalance ? (<div className="popup-stock-info" id="popup-over-balance">
+						<font color='red' className="popup-over-balance">Insufficient Balance</font></div>) : (null)}
 					<div className="popup-stock-info" id="popup-total">
-						Total: <font id="popup-total-figure">${this.state.total}</font>
+						Total: <font id="popup-total-figure">${this.state.total.toFixed(2)}</font>
 					</div>
 					<div id="popup-confirm-purchase">
 						<button onClick={this.purchaseStock} id="confirm-purchase-button">Confirm Purchase</button>
