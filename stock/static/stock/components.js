@@ -574,7 +574,7 @@ class PopularStockTable extends React.Component {
 				<thead>
 					<tr id="all-table-headers">
 						<th className="table-headers" id="table-symbol">Symbol</th>
-						<th className="table-headers" id="table-long-name">Long Name</th>
+						<th className="table-headers" id="table-long-name">Stock Name</th>
 						<th className="table-headers" id="table-watchlist">Watchlist</th>
 						<th className="table-headers" id="table-price">Market Price</th>
 						<th className="table-headers" id="table-change">Market Change</th>
@@ -704,7 +704,7 @@ class PortfolioStockTable extends React.Component {
 				<thead>
 					<tr id="all-table-headers">
 						<th className="table-headers" id="table-symbol">Symbol</th>
-						<th className="table-headers" id="table-long-name">Long Name</th>
+						<th className="table-headers" id="table-long-name">Stock Name</th>
 						<th className="table-headers" id="table-quantity">Quantity</th>
 						<th className="table-headers" id="table-current-price">Total Spent</th>
 						<th className="table-headers" id="table-total-spent">Current Price</th>
@@ -908,7 +908,7 @@ class TransactionTable extends React.Component {
 				<thead>
 					<tr id="all-table-headers">
 					<th className="table-headers" id="table-symbol">Symbol</th>
-						<th className="table-headers" id="table-long-name">Long Name</th>
+						<th className="table-headers" id="table-long-name">Stock Name</th>
 						<th className="table-headers" id="table-quantity">Quantity</th>
 						<th className="table-headers" id="table-timestamp">Timestamp</th>
 						<th className="table-headers" id="table-price-at-purchase">Price Bought</th>
