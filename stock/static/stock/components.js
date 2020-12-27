@@ -386,9 +386,10 @@ class PopularStockData extends React.Component {
         super(props);
 		this.state = {
 			symbol: this.props.stock.symbol,
+			longName: this.props.stock.longName,
 			price: this.props.stock.regularMarketPrice,
-			marketChange: this.props.stock.regularMarketChange,
-			marketChangePercent: this.props.stock.regularMarketChangePercent,
+			marketChange: this.props.stock.regularMarketChange.toFixed(2),
+			marketChangePercent: this.props.stock.regularMarketChangePercent.toFixed(2),
 			marketOpen: this.props.stock.regularMarketOpen,
 			dayHigh: this.props.stock.regularMarketDayHigh,
 			dayLow: this.props.stock.regularMarketDayLow,
@@ -500,14 +501,17 @@ class PopularStockData extends React.Component {
 				<td className="table-data" className="table-symbol">
 					{this.state.symbol}
 				</td>
+				<td className="table-data" className="table-long-name">
+					{this.state.longName}
+				</td>
 				<td className="table-data" className="table-watchlist">
 					<button onClick={event => this.toggleWatchlist(event)} className="watchlist-button">
 						<img  style={{filter: this.state.watchlistButtonState}} className="watchlist-icon" src={watchlistIcon}></img>
 				</button>
 				</td>
 				<td className="table-data" className="table-price"><font color={this.priceColor}>$ {this.state.price}</font></td>
-				<td className="table-data" className="table-change">$ {this.state.marketChange} / {this.state.marketChangePercent} %</td>
-				<td className="table-data" className="table-open">$ {this.state.marketOpen}</td>
+				<td className="table-data" className="table-change">
+					$ {this.state.marketChange} ({this.state.marketChangePercent}) %</td>
 				<td className="table-data" className="table-high">$ {this.state.dayHigh}</td>
 				<td className="table-data" className="table-low">$ {this.state.dayLow}</td>
 				<td className="table-data" className="table-close">
@@ -551,10 +555,10 @@ class PopularStockTable extends React.Component {
 				<thead>
 					<tr id="all-table-headers">
 						<th className="table-headers" id="table-symbol">Symbol</th>
+						<th className="table-headers" id="table-long-name">Long Name</th>
 						<th className="table-headers" id="table-watchlist">Watchlist</th>
 						<th className="table-headers" id="table-price">Market Price</th>
 						<th className="table-headers" id="table-change">Market Change</th>
-						<th className="table-headers" id="table-open">Market Open</th>
 						<th className="table-headers" id="table-high">Day High</th>
 						<th className="table-headers" id="table-low">Day Low</th>
 						<th className="table-headers" id="table-close">Buy / Sell</th>

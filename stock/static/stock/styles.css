@@ -172,7 +172,7 @@ body {
 
 /* Popular stocks table */
 
-#popular-stocks, #portfolio-stocks, #transactions-table {
+#popular-stocks, #portfolio-stocks, #transactions-table, #watchlist-stocks {
     display: flex;
     bottom: 0px;
     margin: 30px auto 10px auto;
@@ -180,6 +180,10 @@ body {
     border-radius: 10px;
     background-color: rgb(22, 22, 22);
     box-shadow: 1px 1px 10px black;
+}
+
+table.popular-stocks-table tr td {
+    font-size: 18px;
 }
 
 
@@ -200,7 +204,7 @@ body {
 
 .table-row-data {
     border-bottom: 1px solid rgb(90, 90, 90);
-    height: 30px;
+    height: 36px;
 }
 
 .table-row-data:hover {
@@ -213,7 +217,7 @@ body {
     font-size: large;
 }
 
-.table-price, .table-change, .table-open, .table-high, .table-low, .table-close {
+.table-price, .table-change, .table-high, .table-low, .table-close {
     text-align: center;
 }
 
@@ -619,12 +623,12 @@ body {
 
 /* portfolio.html */
 
-#portfolio-title-container, #transactions-title-container {
+#portfolio-title-container, #transactions-title-container, #watchlist-title-container {
     width: 70%;
     margin: 100px auto 0px auto;
 }
 
-#portfolio-title, #transactions-title {
+#portfolio-title, #transactions-title, #watchlist-title {
     margin-left: 6px;
     margin-top: 20px;
 }
