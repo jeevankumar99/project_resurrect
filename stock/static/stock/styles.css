@@ -261,7 +261,7 @@ table.popular-stocks-table tr td {
     width: 23px;
 }
 
-#buy-stock-index-page {
+#buy-stock-index-page, #sell-stock-index-page {
     width: 50px;
     height: 20px;
     color: white;
@@ -270,8 +270,18 @@ table.popular-stocks-table tr td {
     border-radius: 10px;
 }
 
+#sell-stock-index-page{
+    background-color: rgb(216, 0, 0);
+    margin-left: 10px;
+}
+
 #buy-stock-index-page:hover {
     background-color: rgb(46, 184, 46);
+    cursor: pointer;
+}
+
+#sell-stock-index-page:hover {
+    background-color:rgb(255, 54, 54);
     cursor: pointer;
 }
 

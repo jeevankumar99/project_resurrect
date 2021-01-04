@@ -17,6 +17,8 @@ urlpatterns = [
     path('purchase_stock', views.purchase_stock, name="purchase_stock"),
     path('my_portfolio', views.my_portfolio, name="my_portfolio"),
     path('get_portfolios', views.get_portfolios, name="get_portfolios"),
+    path('get_portfolios/<str:symbol>', views.get_portfolios, name="get_portfolios"),
     path('my_transactions', views.my_transactions, name="my_transactions"),
     path('get_transactions', views.get_transactions, name="get_transactions"),
+    path("sell_stocks", views.sell_stocks, name="sell_stocks"),
 ]

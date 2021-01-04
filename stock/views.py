@@ -74,10 +74,15 @@ def watchlist_view(request):
 def index(request):
     return render(request, "stock/index.html")
 
-def get_portfolios(request):
+def get_portfolios(request, symbol=None):
     if request.method == "GET":
         user = User.objects.get(username=request.user)
-        portfolios = Portfolio.objects.filter(user=user)
+        if symbol == None:
+            portfolios = Portfolio.objects.filter(user=user)
+        else:
+            portfolios = Portfolio.objects.filter(user=user, stock_symbol=symbol)
+            if len(portfolios) < 1:
+                return JsonResponse([], safe=False)
         serialized_portfolios = [portfolio.serialize() for portfolio in portfolios]
         return JsonResponse(serialized_portfolios, safe=False)
     else:
@@ -177,6 +182,40 @@ def stock_view(request, symbol):
     return render(request, "stock/individual_stock.html", {
         'stock_symbol': symbol
     })
+
+def sell_stocks(request):
+
+    if request.method == 'PUT':
+        data = json.loads(request.body)
+        
+        # extract data from request body
+        stock_symbol = data.get('symbol')
+        quantity = data.get('quantity')
+        total_credit = data.get('totalCredit')
+
+        # get user's portfolio info
+        user = User.objects.get(username=request.user)
+        portfolios = Portfolio.objects.get(user=user,stock_symbol=stock_symbol)
+        
+        # if user has sold all his shares
+        if portfolios.quantity == quantity:
+            portfolios.delete()
+        
+        # else update the quantity of shares
+        else:
+            portfolios.quantity -= quantity
+            portfolios.save()
+        
+        # Credit the funds to his account   
+        user.balance += total_credit
+        user.save()
+        return JsonResponse({'message': "Shares sold, balance updated"}, status=200)
+
+    else:
+        return JsonResponse({'error': "PUT required"}, status=400)
+        
+
+        
 
 def logout_view(request):
     logout(request)

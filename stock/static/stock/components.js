@@ -427,24 +427,67 @@ class PopularStockData extends React.Component {
 		}
 		
 		// Check if user is logged in.
-		this.userLoggedIn = document.querySelector('#user-logged-in').innerHTML;
+		this.userLoggedIn = isUserLoggedIn();
 	}
 
 	buyStock = (event) => {
 		event.stopPropagation();
 		console.log('buy clicked');
-		fetch('/get_user_info')
-		.then(response => response.json())
-		.then(data => {
-			this.userInfo = data;
-			ReactDOM.render(<BuySellPopup userInfo={data} stockInfo={this.props.stock} />, document.querySelector('#popup-container'));
-		})
+		if (isUserLoggedIn()) {
+			fetch('/get_user_info')
+			.then(response => {
+				console.log(response)
+				response.json()
+			})
+			.then(data => {
+				this.userInfo = data;
+				console.log(data)
+				ReactDOM.render(<BuySellPopup userInfo={data} stockInfo={this.props.stock} />, document.querySelector('#popup-container'));
+			})
+		}
+		else {
+			window.location.replace('/login');
+		}
+	}
+
+	sellStock = (event) => {
+		event.stopPropagation();
+		console.log('sell clicked!');
+		let requests = [fetch('/get_user_info'), fetch(`/get_portfolios/${this.state.symbol}`)]
+		Promise.all(requests)
+			.then(responses => Promise.all(responses.map(response => response.json())))
+			.then(userAndPortfolioData => {
+				console.log(userAndPortfolioData);
+			})
 	}
 
 	componentDidMount() {
 		
 		// Get watchlist data only if user is logged in
-		if (this.userLoggedIn === "true") {
+		if (this.userLoggedIn) {
+			let requests = [
+				fetch(`watchlist_handler/${this.state.symbol}`),
+				fetch(`get_portfolios/${this.state.symbol}`)
+			]
+			Promise.all(requests)
+				.then(responses => Promise.all(responses.map(response => response.json())))
+				.then(watchlistAndPortfolioData => {
+					console.log(watchlistAndPortfolioData)
+					let buttonState, buttonText, inPortfolio;
+					
+					(watchlistAndPortfolioData[0].watching) ?
+						(buttonState="brightness(100%)", buttonText = "Unwatch") :
+						(buttonState="brightness(40%)", buttonText = "Watch");
+					
+					(watchlistAndPortfolioData[1].length) ? inPortfolio=true : inPortfolio=false;
+					
+					this.setState(() => ({
+						watchlistButtonText: buttonText,
+						watchlistButtonState: buttonState,
+						inPortfolio: inPortfolio
+					}))
+					
+				})
 			fetch(`watchlist_handler/${this.state.symbol}`)
 			.then(response => response.json())
 			.then(data => {
@@ -474,7 +517,7 @@ class PopularStockData extends React.Component {
 
 
 		// If button clicked and user not logged in, redirect to login page.
-		if (this.userLoggedIn === "false") {
+		if (!this.userLoggedIn) {
 			window.location.replace("/login")
 		}
 
@@ -535,6 +578,9 @@ class PopularStockData extends React.Component {
 				<td className="table-data" className="table-low">$ {this.state.dayLow}</td>
 				<td className="table-data" className="table-close">
 					<button onClick={event => this.buyStock(event)} id="buy-stock-index-page">Buy</button>
+					{this.state.inPortfolio ? (
+						<button onClick={event => this.sellStock(event)} id="sell-stock-index-page">Sell</button>
+					) : (null)}
 				</td>
 			</tr>
 		)
@@ -616,7 +662,7 @@ class PortfolioStockData extends React.Component {
 		}
 		
 		// Check if user is logged in.
-		this.userLoggedIn = document.querySelector('#user-logged-in').innerHTML;
+		this.userLoggedIn = isUserLoggedIn();
 	}
 
 	buyStock = (event) => {
@@ -643,12 +689,6 @@ class PortfolioStockData extends React.Component {
 	}
 
 
-	componentDidMount() {
-		
-		// Get current stock price using fetch
-
-	}
-
 	render () {
 		return (
 			<tr onClick={() => window.location.href = `stock/${this.state.symbol}`} className="table-row-data" id={`table-row-${this.state.symbol}`}>
@@ -666,6 +706,7 @@ class PortfolioStockData extends React.Component {
 				</td>
 				<td className="table-data" className="table-buy-sell">
 					<button onClick={event => this.buyStock(event)} id="buy-stock-index-page">Buy</button>
+					<button onClick={event => this.sellStock(event)} id="sell-stock-index-page">Sell</button>
 				</td>
 			</tr>
 		)
@@ -940,4 +981,15 @@ function getCookie(name) {
         }
     }
     return cookieValue;
+}
+
+// To check if the current user is logged in .
+function isUserLoggedIn() {
+	let userLoggedIn = document.querySelector('#user-logged-in').innerHTML;
+	if (userLoggedIn === 'true') {
+		return true;
+	}
+	else {
+		return false;
+	}
 }
