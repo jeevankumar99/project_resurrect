@@ -34,6 +34,7 @@ class Portfolio(models.Model):
 class Transaction(models.Model):
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey("User", on_delete=models.CASCADE, related_name="transaction_user")
+    transaction_type = models.CharField(blank=False, default='buy', max_length=4)
     stock_symbol = models.CharField(blank=False, max_length=12)
     long_name = models.CharField(blank=False, max_length=100)
     quantity = models.PositiveIntegerField(blank=False)
@@ -51,7 +52,8 @@ class Transaction(models.Model):
             'longName': self.long_name,
             'quantity': self.quantity,
             'timestamp': self.timestamp.strftime("%a, %d %b %y, %I:%M %p"),
-            'priceAtPurchase': self.price_at_purchase
+            'priceAtPurchase': self.price_at_purchase,
+            'transactionType': self.transaction_type
         }
 
 

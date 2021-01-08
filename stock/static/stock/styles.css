@@ -198,13 +198,13 @@ table.popular-stocks-table tr td {
 
 .table-data {
     padding-top: 10px;
-    color: green;
 }
 
 
 .table-row-data {
     border-bottom: 1px solid rgb(90, 90, 90);
     height: 36px;
+
 }
 
 .table-row-data:hover {
@@ -217,7 +217,7 @@ table.popular-stocks-table tr td {
     font-size: large;
 }
 
-.table-price, .table-change, .table-high, .table-low, .table-close {
+.table-price, .table-change, .table-high, .table-low, .table-close, .table-transaction-type {
     text-align: center;
 }
 

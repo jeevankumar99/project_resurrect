@@ -6,7 +6,7 @@ fetch('/get_portfolios')
     let formattedData = [];
     let tempData = [...data];
     // Yahoo accepts ONLY upto 10 stock queries in one request.
-    // Splits watchlist into arrays containg upto 10 stocks.
+    // Splits portfolios into arrays containg upto 10 stocks.
     if (data.length < 1) {
         let emptyWatchlist = document.createElement('h3');
         emptyWatchlist.innerHTML = "Stocks that you watch will be displayed here.";

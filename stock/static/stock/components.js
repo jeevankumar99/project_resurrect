@@ -289,7 +289,7 @@ class Autocomplete extends React.Component {
 			ReactDOM.render(<NotificationPopup info={info} />, document.querySelector('#notification-container'));
 
 			// To update fields according to purchase in portfolio page.
-			this.props.updateState ? (this.props.updateState(this.state.quantity)) : (null);
+			this.props.updateState ? (this.props.updateState(this.state.quantity, 'buy')) : (null);
 
 			// To update shares owned according to purchase
 			this.props.updateOwnedShares ? (this.props.updateOwnedShares(this.state.quantity, 'buy')) : (null);
@@ -306,7 +306,9 @@ class Autocomplete extends React.Component {
 			body: JSON.stringify({
 				symbol: this.state.symbol,
 				quantity: this.state.quantity,
-				totalCredit: this.state.total
+				longName: this.state.longName,
+				totalCredit: this.state.total,
+				currentPrice: this.state.regularMarketPrice,
 			}),
 			headers: {'X-CSRFToken': csrf_token}
 		})
@@ -322,6 +324,9 @@ class Autocomplete extends React.Component {
 			// updates owned shares from the parent component's state
 			this.props.updateOwnedShares ? (this.props.updateOwnedShares(this.state.quantity, 'sell')) : (null);
 			
+			// To update fields according to sale in portfolio page.
+			this.props.updateState ? (this.props.updateState(this.state.quantity, 'sell')) : (null);
+
 			this.closePopup();
 			ReactDOM.render(<NotificationPopup info={info} />, document.querySelector('#notification-container'));
 		})
@@ -592,7 +597,15 @@ class PopularStockData extends React.Component {
 			.then(data => {
 				this.userInfo = data;
 				console.log(data)
-				ReactDOM.render(<BuySellPopup motive="buy" updateOwnedShares={this.updateOwnedShares} userInfo={data} stockInfo={this.props.stock} />, document.querySelector('#popup-container'));
+				ReactDOM.render(
+					<BuySellPopup 
+						motive="buy" 
+						updateOwnedShares={this.updateOwnedShares} 
+						userInfo={data} 
+						stockInfo={this.props.stock} 
+					/>, 
+					document.querySelector('#popup-container')
+				);
 			})
 		}
 		else {
@@ -608,8 +621,16 @@ class PopularStockData extends React.Component {
 		.then(response => response.json())
 		.then(data => {
 			console.log(data);
-			ReactDOM.render(<BuySellPopup motive="sell" updateOwnedShares={this.updateOwnedShares} userInfo={data} stockInfo={this.props.stock} portfolioInfo={this.state.portfolioInfo} />,
-				document.querySelector('#popup-container'));
+			ReactDOM.render(
+				<BuySellPopup 
+					motive="sell" 
+					updateOwnedShares={this.updateOwnedShares} 
+					userInfo={data} 
+					stockInfo={this.props.stock} 
+					portfolioInfo={this.state.portfolioInfo} 
+				/>,
+				document.querySelector('#popup-container')
+			);
 		})
 	}
 
@@ -770,9 +791,10 @@ class PortfolioStockData extends React.Component {
 			totalSpent: parseInt(this.props.portfolio.totalSpent),
 			profitLosses: profitLosses.toFixed(2),
 			isWatchlistPage: this.props.portfolio.isWatchlistPage,
+			portfolioInfo: this.props.portfolio
 		}
 
-		// To change the color depending on rise and fall of price.
+		// To change the color depending on rise and fall of price.	
 		if (profitLosses > 0) {
 			this.priceColor = "green";
 		}
@@ -791,20 +813,67 @@ class PortfolioStockData extends React.Component {
 		.then(response => response.json())
 		.then(data => {
 			this.userInfo = data;
-			ReactDOM.render(<BuySellPopup updateState={this.updateState} userInfo={data} stockInfo={this.props.portfolio.liveStockData} />, document.querySelector('#popup-container'));
+			ReactDOM.render(
+				<BuySellPopup 
+					motive='buy' 
+					updateState={this.updateState} 
+					userInfo={data} 
+					stockInfo={this.props.portfolio.liveStockData} 
+				/>, 
+				document.querySelector('#popup-container')
+			);
 		})
 	}
 
-	updateState = (newQuantity) => {
-		let totalQuantity = newQuantity +  this.state.quantity;
-		let newTotalSpent = this.state.totalSpent + (newQuantity * this.state.currentPrice);
-		let newProfitLosses = (totalQuantity * this.state.currentPrice) - newTotalSpent;
-		console.log(newQuantity, newTotalSpent, newProfitLosses)
-		this.setState(() => ({
-			quantity: totalQuantity,
-			totalSpent: newTotalSpent,
-			profitLosses: newProfitLosses
-		}));
+	sellStock = (event) => {
+		event.stopPropagation();
+		console.log('sell stock clicked');
+		fetch('/get_user_info')
+		.then(response => response.json())
+		.then(data => {
+			this.userInfo = data;
+			ReactDOM.render(
+				<BuySellPopup 
+					motive='sell' 
+					updateState={this.updateState} 
+					userInfo={data} 
+					stockInfo={this.props.portfolio.liveStockData}
+					portfolioInfo={this.state.portfolioInfo} 
+				/>, 
+				document.querySelector('#popup-container')
+			);
+		})
+		
+	}
+
+	// Updates table based on user's buy or sell.
+	updateState = (newQuantity, motive) => {
+
+		// if user buys more shares.
+		if (motive === 'buy') {
+			let totalQuantity = newQuantity +  this.state.quantity;
+			let newTotalSpent = this.state.totalSpent + (newQuantity * this.state.currentPrice);
+			let newProfitLosses = (totalQuantity * this.state.currentPrice) - newTotalSpent;
+			console.log(newQuantity, newTotalSpent, newProfitLosses)
+			this.setState(() => ({
+				quantity: totalQuantity,
+				totalSpent: newTotalSpent,
+				profitLosses: newProfitLosses
+			}));
+		}
+
+		// if user sells shares.
+		else {
+			let totalQuantity = this.state.quantity - newQuantity;
+			let newTotalSpent = this.state.totalSpent - (newQuantity * this.state.currentPrice);
+			let newProfitLosses = (totalQuantity * this.state.currentPrice) - newTotalSpent;
+			console.log(newQuantity, newTotalSpent, newProfitLosses)
+			this.setState(() => ({
+				quantity: totalQuantity,
+				totalSpent: newTotalSpent,
+				profitLosses: newProfitLosses
+			}));
+		}
 	}
 
 
@@ -868,7 +937,7 @@ class PortfolioStockTable extends React.Component {
 						<th className="table-headers" id="table-quantity">Quantity</th>
 						<th className="table-headers" id="table-current-price">Total Spent</th>
 						<th className="table-headers" id="table-total-spent">Current Price</th>
-						<th className="table-headers" id="table-profit-loss">Profit/Loss</th>
+						<th className="table-headers" id="table-profit-loss">Profit/Loss (current)</th>
 						<th className="table-headers" id="table-buy-sell">Buy / Sell</th>
 					</tr>
 				</thead>
@@ -1032,6 +1101,16 @@ class StockNewsParent extends React.Component {
 
 
 class TransactionData extends React.Component {
+	constructor(props) {
+		super(props);
+		if (this.props.transactionInfo.transactionType === 'BUY') {
+			this.rowColor = 'rgb(19,255,130)';
+		}
+		else {
+			// rgb(255,89,109)
+			this.rowColor = 'red';
+		}
+	}
 	render() {
 		return (
 			<tr className="table-row-data">
@@ -1048,6 +1127,9 @@ class TransactionData extends React.Component {
 					{this.props.transactionInfo.timestamp}</td>
 				<td className="table-data" className="table-price-bought">
 					$ {this.props.transactionInfo.priceAtPurchase}
+				</td>
+				<td className="table-data" className="table-transaction-type">
+					<font color={this.rowColor}>{this.props.transactionInfo.transactionType}</font>
 				</td>
 			</tr>
 		)
@@ -1080,7 +1162,9 @@ class TransactionTable extends React.Component {
 						<th className="table-headers" id="table-long-name">Stock Name</th>
 						<th className="table-headers" id="table-quantity">Quantity</th>
 						<th className="table-headers" id="table-timestamp">Timestamp</th>
-						<th className="table-headers" id="table-price-at-purchase">Price Bought</th>
+						<th className="table-headers" id="table-price-at-purchase">Price Bought/Sold</th>
+						<th className="table-headers" id="table-transaction-type">Transaction Type</th>
+
 					</tr>
 				</thead>
 				<tbody>

@@ -92,7 +92,7 @@ def get_portfolios(request, symbol=None):
 def get_transactions(request):
     if request.method == 'GET':
         user = User.objects.get(username=request.user)
-        transactions = Transaction.objects.filter(user=user)
+        transactions = Transaction.objects.filter(user=user).order_by('-timestamp')
         serialized_transactions = [transaction.serialize() for transaction in transactions]
         return JsonResponse(serialized_transactions, safe=False)
     else:
@@ -132,6 +132,7 @@ def purchase_stock(request):
             long_name=long_name,
             quantity=quantity,
             price_at_purchase=current_price,
+            transaction_type='BUY'
         )
         print(stock_symbol, quantity, balance)
         try:
@@ -193,6 +194,8 @@ def sell_stocks(request):
         stock_symbol = data.get('symbol')
         quantity = data.get('quantity')
         total_credit = data.get('totalCredit')
+        current_price = data.get('currentPrice')
+        long_name = data.get('longName')
 
         # get user's portfolio info
         user = User.objects.get(username=request.user)
@@ -205,8 +208,19 @@ def sell_stocks(request):
         # else update the quantity of shares
         else:
             portfolios.quantity -= quantity
+            current_total_spent = float(portfolios.total_spent)
+            portfolios.total_spent = current_total_spent - total_credit
             portfolios.save()
         
+        Transaction.objects.create(
+            user=user,
+            stock_symbol=stock_symbol,
+            long_name=long_name,
+            quantity=quantity,
+            price_at_purchase=current_price,
+            transaction_type='SELL'
+        )
+
         # Credit the funds to his account  
         current_balance = float(user.balance) 
         user.balance = current_balance + total_credit
