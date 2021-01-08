@@ -3,6 +3,7 @@ const watchlistIcon = "/static/stock/images/watchlist-icon.png";
 const API_KEY = "906765926amshebc39f8abc4333cp190d7bjsnee05cad1a6d0";
 
 
+
 // Additional Stock Info in the individual stock page.
 class AdditionalInfo extends React.Component {
 	constructor(props) {
@@ -37,6 +38,7 @@ class AdditionalInfo extends React.Component {
 	buyStock = () => {
 		ReactDOM.render(<BuySellPopup userInfo={this.userInfo} stockInfo={this.props.stockInfo} />, document.querySelector('#popup-container'));
 	}
+	
 	render() {
 		return (
 			<div className="stock-chart-data" id="additional-data">
@@ -160,15 +162,23 @@ class Autocomplete extends React.Component {
 	calculateTotal = (quantity) => {
 		(quantity === 0 || quantity === '') ? quantity = 1 : null;
 		quantity = parseInt(quantity);
+
+		// if user clicks the buy button.
 		if (this.props.motive === 'buy') {
+
+			// To hide the over balance div.
 			let overBalance = false;
 			let confirmButton = document.querySelector('#confirm-purchase-button');
+
+			// If total is over the user's balance.
 			if ((this.state.regularMarketPrice * quantity) > this.state.balance) {
 				overBalance = true;
 				confirmButton.disabled = true;
 				console.log('overbalance', confirmButton)
 				confirmButton.style.backgroundColor = 'red';
 			}
+
+			// if total is within the user's balance.
 			else {
 				confirmButton.disabled = false;
 				console.log('not overbalance');
@@ -182,10 +192,14 @@ class Autocomplete extends React.Component {
 				overBalance: overBalance
 			}))
 		}
+
+		// if user clicks the sell button.
 		else {
 			let increaseButton = document.querySelector('#quantity-increase-button');
 			let sellButton = document.querySelector('#confirm-sell-button')
 			console.log(quantity)
+
+			// if selected quantity of shares is owned by user.
 			if (quantity < this.props.portfolioInfo.quantity) {
 				increaseButton.disabled = false;
 				sellButton.disabled = false;
@@ -196,6 +210,8 @@ class Autocomplete extends React.Component {
 					overSellShare: false
 				}))
 			}
+
+			// to disable increase button when user reaches quantity limit
 			else if (quantity === this.props.portfolioInfo.quantity) {
 				increaseButton.disabled = true;
 				sellButton.disabled = false;
@@ -207,6 +223,8 @@ class Autocomplete extends React.Component {
 				}))
 				
 			}
+
+			// if user tries to sell more shares than he owns.
 			else {
 				this.setState(() => ({
 					overSellShare: true
@@ -215,25 +233,30 @@ class Autocomplete extends React.Component {
 		}
 	}
 
-	closePopup = () => {
-		console.log('close popup button clicked!');
-		ReactDOM.unmountComponentAtNode(document.querySelector('#popup-container'));
-	}
-
 	// Changes quantity when - or + buttons are clicked.
 	changeQuantity = (action) => {
 		let currentValue = parseInt(document.querySelector('#quantity-input-box').value);
 			!currentValue ? (currentValue = 1) : (null);
+		
+		// to increase quantity.
 		if (action === 'increase' ) {
 			document.querySelector('#quantity-input-box').value = currentValue + 1;
 			this.calculateTotal(currentValue + 1)
 		}
+
+		// to decrease quantity.
 		else {
 			if (currentValue > 1) {
 				document.querySelector('#quantity-input-box').value = currentValue - 1;
 				this.calculateTotal(currentValue - 1);
 			}
 		}
+	}
+
+	// Closes the buy/sell popup.
+	closePopup = () => {
+		console.log('close popup button clicked!');
+		ReactDOM.unmountComponentAtNode(document.querySelector('#popup-container'));
 	}
 
 	// Updates backend to when purchase is confirmed.
@@ -274,6 +297,7 @@ class Autocomplete extends React.Component {
 		});
 	}
 
+	// Sells the stocks and updates backend.
 	sellStock = () => {
 		console.log("sell stock clicked!");
 		let csrf_token = getCookie('csrftoken');
@@ -294,7 +318,10 @@ class Autocomplete extends React.Component {
 				content: `You sold ${this.state.quantity} stocks of ${this.state.symbol} for ${this.state.total}`, 
 				titleColor: 'red'
 			}
+
+			// updates owned shares from the parent component's state
 			this.props.updateOwnedShares ? (this.props.updateOwnedShares(this.state.quantity, 'sell')) : (null);
+			
 			this.closePopup();
 			ReactDOM.render(<NotificationPopup info={info} />, document.querySelector('#notification-container'));
 		})
@@ -356,6 +383,7 @@ class Autocomplete extends React.Component {
 	}
 }
 
+
 // Displays indexes markets in the index page (NSE and BSE).
  class IndexStocks extends React.Component {
 	constructor(props) {
@@ -377,12 +405,16 @@ class Autocomplete extends React.Component {
 			NSEmarketPreviousClose: this.props.NSEdata.regularMarketPreviousClose.raw,
 		}
 
+		// if price of stock decreases.
 		if (this.state.BSEmarketChange < 0) {
 			this.BSEpriceColor = "red";
 		}
+		// if price of stock increases.
 		else {
 			this.BSEpriceColor = "green";
 		}
+
+		// To handle market price drops and rises.
 		(this.state.NSEmarketChange < 0) ? (this.NSEpriceColor = "red") : (this.NSEpriceColor = "green");
 		(this.state.NSEmarketPreviousClose > this.state.NSEmarketPrice) ? (this.NSEprevColor = "rgb(0, 88, 0)") : (this.NSEprevColor = "rgb(146, 1, 1)");
 		(this.state.BSEmarketPreviousClose > this.state.BSEmarketPrice) ? (this.BSEprevColor = "rgb(0, 88, 0)") : (this.BSEprevColor = "rgb(146, 1, 1)");
@@ -435,6 +467,7 @@ class Autocomplete extends React.Component {
 	}
 }
 
+
 // Displays notification at the bottom-right.
 class NotificationPopup extends React.Component {
 	constructor(props) {
@@ -472,6 +505,7 @@ class NotificationPopup extends React.Component {
 
 }
 
+
 // Table Row Component (each stock in the popular's table)
 class PopularStockData extends React.Component {
 	constructor(props) {
@@ -503,6 +537,52 @@ class PopularStockData extends React.Component {
 		this.userLoggedIn = isUserLoggedIn();
 	}
 
+	componentDidMount() {
+		
+		// Get watchlist data only if user is logged in
+		if (this.userLoggedIn) {
+			let requests = [
+				fetch(`watchlist_handler/${this.state.symbol}`),
+				fetch(`get_portfolios/${this.state.symbol}`)
+			]
+
+			// get watchlist and porftolio infos.
+			Promise.all(requests)
+				.then(responses => Promise.all(responses.map(response => response.json())))
+				.then(watchlistAndPortfolioData => {
+					let buttonState, buttonText, inPortfolio, portfolioInfo
+					
+					// if user is watching the current stock
+					(watchlistAndPortfolioData[0].watching) ?
+						(buttonState="brightness(100%)", buttonText = "Unwatch") :
+						(buttonState="brightness(40%)", buttonText = "Watch");
+					 
+					// if stock not in user's watchlist
+					(watchlistAndPortfolioData[1].length) ? inPortfolio=true : inPortfolio=false;
+					inPortfolio ? (portfolioInfo = watchlistAndPortfolioData[1][0])
+						: (portfolioInfo = null);
+					
+					this.setState(() => ({
+						watchlistButtonText: buttonText,
+						watchlistButtonState: buttonState,
+						inPortfolio: inPortfolio,
+						portfolioInfo: portfolioInfo
+					}))
+					
+				})
+		}
+
+		// Else just display initial button state.
+		else {
+			this.setState(() => ({
+				watchlistButtonText: "Watch",
+				watchlistButtonState: "brightness(40%)"
+			}));
+		}
+
+	}
+
+	// open buy popup when buy is clicked.
 	buyStock = (event) => {
 		event.stopPropagation();
 		console.log('buy clicked');
@@ -520,6 +600,7 @@ class PopularStockData extends React.Component {
 		}
 	}
 
+	// open sell popup when sell is clicked.
 	sellStock = (event) => {
 		event.stopPropagation();
 		console.log('sell clicked!');
@@ -530,47 +611,6 @@ class PopularStockData extends React.Component {
 			ReactDOM.render(<BuySellPopup motive="sell" updateOwnedShares={this.updateOwnedShares} userInfo={data} stockInfo={this.props.stock} portfolioInfo={this.state.portfolioInfo} />,
 				document.querySelector('#popup-container'));
 		})
-	}
-
-	componentDidMount() {
-		
-		// Get watchlist data only if user is logged in
-		if (this.userLoggedIn) {
-			let requests = [
-				fetch(`watchlist_handler/${this.state.symbol}`),
-				fetch(`get_portfolios/${this.state.symbol}`)
-			]
-			Promise.all(requests)
-				.then(responses => Promise.all(responses.map(response => response.json())))
-				.then(watchlistAndPortfolioData => {
-					let buttonState, buttonText, inPortfolio, portfolioInfo
-					
-					(watchlistAndPortfolioData[0].watching) ?
-						(buttonState="brightness(100%)", buttonText = "Unwatch") :
-						(buttonState="brightness(40%)", buttonText = "Watch");
-					
-					(watchlistAndPortfolioData[1].length) ? inPortfolio=true : inPortfolio=false;
-					inPortfolio ? (portfolioInfo = watchlistAndPortfolioData[1][0])
-						: (portfolioInfo = null);
-					
-					this.setState(() => ({
-						watchlistButtonText: buttonText,
-						watchlistButtonState: buttonState,
-						inPortfolio: inPortfolio,
-						portfolioInfo: portfolioInfo
-					}))
-					
-				})
-		}
-
-		// Else just display initiale button state.
-		else {
-			this.setState(() => ({
-				watchlistButtonText: "Watch",
-				watchlistButtonState: "brightness(40%)"
-			}));
-		}
-
 	}
 
 	// Add the selected stock to watchlist
@@ -619,13 +659,19 @@ class PopularStockData extends React.Component {
 		console.log("request sent!")
 	}
 
+	// to pass as prop for BuySellPopup to update this component's state.
 	updateOwnedShares = (newQuantity, motive) => {
+		
+		// duplicate the portfolioInfo object
 		let newPortfolioInfo = this.state.portfolioInfo;
 		console.log(newPortfolioInfo)
+		
+		// check if motive is to buy or sell to credit or debit total price.
 		motive === 'sell' ? 
 			(newPortfolioInfo.quantity = this.state.portfolioInfo.quantity - newQuantity) :
 			(newPortfolioInfo.quantity = this.state.portfolioInfo.quantity + newQuantity);
-		this.setState(() => ({
+		
+			this.setState(() => ({
 			portfolioInfo: newPortfolioInfo
 		}))
 	}
@@ -834,6 +880,7 @@ class PortfolioStockTable extends React.Component {
 	}
 }
 
+
 class ProfileInfo extends React.Component {
 	constructor(props) {
 		super(props);
@@ -847,6 +894,7 @@ class ProfileInfo extends React.Component {
 	}
 
 }
+
 
 // Displays the primary stock info in individual stock page.
 class StockInfo extends React.Component {
@@ -928,6 +976,7 @@ class StockInfo extends React.Component {
 	}
 }
 
+
 // Displays individual news related to current stock.
 class StockNewsChild extends React.Component {
 	constructor(props) {
@@ -959,6 +1008,8 @@ class StockNewsParent extends React.Component {
 	constructor(props) {
 		super(props);
 		this.newsChildrenList = []
+
+		// Add stock news components into a list.
 		this.props.newsChildren.forEach(news => {
 			this.newsChildrenList.push(
 				<StockNewsChild key={news.id} newsInfo={news} />
@@ -978,6 +1029,7 @@ class StockNewsParent extends React.Component {
 	}
 
 }
+
 
 class TransactionData extends React.Component {
 	render() {
@@ -1002,10 +1054,13 @@ class TransactionData extends React.Component {
 	}
 }
 
+
 class TransactionTable extends React.Component {
 	constructor(props) {
 		super(props);
 		this.transactionData = [];
+
+		// Add Transaction row data components to a list.
 		this.props.transactionData.forEach(transactionInfo => {
 			this.transactionData.push(<TransactionData 
 				transactionInfo={transactionInfo} 
@@ -1036,8 +1091,10 @@ class TransactionTable extends React.Component {
 	}
 }
 
+
 // Render the autocomplete div for  the search bar.
 ReactDOM.render(<Autocomplete />, document.querySelector('#top-bar-search-div'))
+
 
 // To get CSRF token from cookies.
 function getCookie(name) {
@@ -1055,6 +1112,7 @@ function getCookie(name) {
     }
     return cookieValue;
 }
+
 
 // To check if the current user is logged in .
 function isUserLoggedIn() {

@@ -17,6 +17,8 @@ fetch('/get_watchlist')
     }
 
     else {
+
+        // if watchlist is over 10 stocks, split them into chunks
         if (data.length > 10) {
             while (data.length > 0) {
                 formatted_data.push(data.splice(0, 10))
@@ -24,9 +26,13 @@ fetch('/get_watchlist')
             // Add stocks in a (AAPL,TSLA,MRSFT) format to get quotes
             formatted_data.forEach(chunksOfTen => {
                 chunksOfTen.forEach((stock, key, stocks) => {
+
+                    // if stock is the last in the list dont add comma
                     if (key === stocks.length - 1) {
                         serializedStocks = serializedStocks + stock.symbol;
                     }
+                    
+                    // else add a comma after every stock. %2C is comma.
                     else {
                         serializedStocks = serializedStocks + `${stock.symbol}%2C`;
                     }
@@ -34,11 +40,17 @@ fetch('/get_watchlist')
                 serializedStockList.push(serializedStocks);
             })
         }
+
+        // if fewer than 10, send the requests as is.
         else {
             data.forEach((stock, key, stocks) => {
+
+                // avoid comma for last stock
                 if (key === stocks.length - 1) {
                     serializedStocks = serializedStocks + stock.symbol;
                 }
+
+                // add comma after every stock
                 else {
                     serializedStocks = serializedStocks + `${stock.symbol}%2C`;
                 }
@@ -98,10 +110,6 @@ fetch('/get_watchlist')
             
             // Populate row data into table
             let watchlistStockList = []
-            // watchlistStocks.forEach(stock => {
-            //     stock.isWatchlistPage = true;
-            //     watchlistStockList.push(<PopularStockData key={stock.symbol} stock={stock}/>)
-            // })
 
             // Render entire table.
             ReactDOM.render(<PopularStockTable stocksData={watchlistStocks}/>, document.querySelector('#watchlist-stocks'))

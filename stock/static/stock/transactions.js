@@ -1,3 +1,5 @@
+
+// To get transactions from backend.
 fetch('/get_transactions')
 .then(response => response.json())
 .then(data => {
