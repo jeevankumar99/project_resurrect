@@ -533,13 +533,13 @@ table.popular-stocks-table tr td {
     width: 30px;
 }
 
-#quantity-reduce-button:hover, #quantity-increase-button:hover {
+#quantity-reduce-button:hover, #quantity-increase-button:hover:enabled {
     background-color: white;
     color: black;
     cursor: pointer;
 }
 
-#quantity-reduce-button:focus, #quantity-increase-button:focus {
+#quantity-reduce-button:focus, #quantity-increase-button:focus:enabled {
     outline: none;
 }
 
@@ -571,7 +571,7 @@ table.popular-stocks-table tr td {
     right: 12px;
 }
 
-#confirm-purchase-button {
+.buy-sell-button {
     position: fixed;
     bottom: 15px;
     left: 15px;
@@ -585,10 +585,25 @@ table.popular-stocks-table tr td {
     border: 0px;
 }
 
-#confirm-purchase-button:hover {
+.buy-sell-button:focus {
     outline: none;
-    background-color: rgb(46, 184, 46);
+}
+
+.buy-sell-button:hover:enabled {
+    outline: none;
     cursor: pointer;
+}
+
+#confirm-purchase-button:hover:enabled {
+    background-color: rgb(46, 184, 46);
+}
+
+#confirm-sell-button {
+    background-color: red;
+}
+
+#confirm-sell-button:hover:enabled {
+    background-color: rgb(247, 58, 58);
 }
 
 @keyframes slide_in {
@@ -623,7 +638,6 @@ table.popular-stocks-table tr td {
     width: 270px;
     padding: 10px;
     background-color: rgb(32, 32, 32);
-    border: 1px solid green;
     border-radius: 10px;
     animation-name: slide_in;
     animation-duration: 1s;

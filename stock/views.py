@@ -61,6 +61,7 @@ def get_watchlist(request):
 
 @login_required(login_url='/login')
 def get_user_info(request):
+    print('get_user_info is working')
     if request.method == "GET":
         user = User.objects.get(username=request.user)
         return JsonResponse(user.serialize(), safe=False)
@@ -206,8 +207,9 @@ def sell_stocks(request):
             portfolios.quantity -= quantity
             portfolios.save()
         
-        # Credit the funds to his account   
-        user.balance += total_credit
+        # Credit the funds to his account  
+        current_balance = float(user.balance) 
+        user.balance = current_balance + total_credit
         user.save()
         return JsonResponse({'message': "Shares sold, balance updated"}, status=200)
 

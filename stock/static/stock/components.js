@@ -18,7 +18,6 @@ class AdditionalInfo extends React.Component {
 			currency: this.props.stockInfo.currency,
 		}
 		this.state.marketState === 'CLOSED' ? this.marketColor = 'red' : this.marketColor = 'green';
-		this.userInfo
 	}
 
 	componentDidMount() {
@@ -152,32 +151,68 @@ class Autocomplete extends React.Component {
 			total: this.props.stockInfo.regularMarketPrice,
 			liveBalance: parseFloat(this.props.userInfo.balance),
 			overBalance: false,
+			overSellShare: false,
 		}
+
 	}
 
 	// Calculates total based on the current quantity in the input bar
 	calculateTotal = (quantity) => {
-		quantity === 0 ? quantity = 1 : null;
-		let overBalance = false;
-		let confirmButton = document.querySelector('#confirm-purchase-button');
-		if ((this.state.regularMarketPrice * quantity) > this.state.balance) {
-			overBalance = true;
-			confirmButton.disabled = true;
-			console.log('overbalance', confirmButton)
-			confirmButton.style.backgroundColor = 'red';
+		(quantity === 0 || quantity === '') ? quantity = 1 : null;
+		quantity = parseInt(quantity);
+		if (this.props.motive === 'buy') {
+			let overBalance = false;
+			let confirmButton = document.querySelector('#confirm-purchase-button');
+			if ((this.state.regularMarketPrice * quantity) > this.state.balance) {
+				overBalance = true;
+				confirmButton.disabled = true;
+				console.log('overbalance', confirmButton)
+				confirmButton.style.backgroundColor = 'red';
+			}
+			else {
+				confirmButton.disabled = false;
+				console.log('not overbalance');
+				confirmButton.style.backgroundColor = null;
+			}
+			console.log(quantity)
+			this.setState((state) => ({
+				total: state.regularMarketPrice * quantity,
+				quantity: quantity,
+				liveBalance: state.balance - (state.regularMarketPrice * quantity),
+				overBalance: overBalance
+			}))
 		}
 		else {
-			confirmButton.disabled = false;
-			console.log('not overbalance');
-			confirmButton.style.backgroundColor = null;
+			let increaseButton = document.querySelector('#quantity-increase-button');
+			let sellButton = document.querySelector('#confirm-sell-button')
+			console.log(quantity)
+			if (quantity < this.props.portfolioInfo.quantity) {
+				increaseButton.disabled = false;
+				sellButton.disabled = false;
+				this.setState(state => ({
+					total: state.regularMarketPrice * quantity,
+					quantity: quantity,
+					liveBalance: state.balance + (state.regularMarketPrice * quantity),
+					overSellShare: false
+				}))
+			}
+			else if (quantity === this.props.portfolioInfo.quantity) {
+				increaseButton.disabled = true;
+				sellButton.disabled = false;
+				this.setState(state => ({
+					total: state.regularMarketPrice * quantity,
+					quantity: quantity,
+					liveBalance: state.balance + (state.regularMarketPrice * quantity),
+					overSellShare: false
+				}))
+				
+			}
+			else {
+				this.setState(() => ({
+					overSellShare: true
+				}))
+			}
 		}
-		console.log(quantity)
-		this.setState((state) => ({
-			total: state.regularMarketPrice * quantity,
-			quantity: quantity,
-			liveBalance: state.balance - (state.regularMarketPrice * quantity),
-			overBalance: overBalance
-		}))
 	}
 
 	closePopup = () => {
@@ -232,7 +267,37 @@ class Autocomplete extends React.Component {
 
 			// To update fields according to purchase in portfolio page.
 			this.props.updateState ? (this.props.updateState(this.state.quantity)) : (null);
+
+			// To update shares owned according to purchase
+			this.props.updateOwnedShares ? (this.props.updateOwnedShares(this.state.quantity, 'buy')) : (null);
+
 		});
+	}
+
+	sellStock = () => {
+		console.log("sell stock clicked!");
+		let csrf_token = getCookie('csrftoken');
+		fetch('/sell_stocks', {
+			method: 'PUT',
+			body: JSON.stringify({
+				symbol: this.state.symbol,
+				quantity: this.state.quantity,
+				totalCredit: this.state.total
+			}),
+			headers: {'X-CSRFToken': csrf_token}
+		})
+		.then(response => response.json())
+		.then(data => {
+			console.log(data);
+			let info = {
+				title: "Shares Sold Successfully",
+				content: `You sold ${this.state.quantity} stocks of ${this.state.symbol} for ${this.state.total}`, 
+				titleColor: 'red'
+			}
+			this.props.updateOwnedShares ? (this.props.updateOwnedShares(this.state.quantity, 'sell')) : (null);
+			this.closePopup();
+			ReactDOM.render(<NotificationPopup info={info} />, document.querySelector('#notification-container'));
+		})
 	}
 
 	render() {
@@ -269,13 +334,21 @@ class Autocomplete extends React.Component {
 					<div className="popup-stock-info" id="popup-balance">
 						<font className="popup-span">Your Live Balance: $</font>{this.state.liveBalance.toFixed(2)}
 					</div>
+					{this.props.motive === 'sell' ? 
+						(<div className="popup-stock-info" id="popup-stocks-owned">Shares owned: {this.props.portfolioInfo.quantity}</div>) :
+						(null)}
 					{this.state.overBalance ? (<div className="popup-stock-info" id="popup-over-balance">
 						<font color='red' className="popup-over-balance">Insufficient Balance</font></div>) : (null)}
+					{this.state.overSellShare ? (<div className="popup-stock-info" id="popup-over-sell-share">
+						<font color='red' className="popup-over-sell-share">Quantity exceeds number of shares owned</font></div>) : (null)}
 					<div className="popup-stock-info" id="popup-total">
 						Total: <font id="popup-total-figure">${this.state.total.toFixed(2)}</font>
 					</div>
 					<div id="popup-confirm-purchase">
-						<button onClick={this.purchaseStock} id="confirm-purchase-button">Confirm Purchase</button>
+						{this.props.motive === 'buy' ? 
+							(<button onClick={this.purchaseStock} className='buy-sell-button'id="confirm-purchase-button">Confirm Purchase</button>) :
+							(<button onClick={this.sellStock} className='buy-sell-button' id="confirm-sell-button">Sell Shares</button>)
+						}	
 					</div>
 				</div>
 			</div>
@@ -388,7 +461,7 @@ class NotificationPopup extends React.Component {
 		}, 5000);
 		
 		return (
-			<div id="notification-popup">
+			<div id="notification-popup" style={{border: `1px solid ${this.state.titleColor}`}}>
 				<div id="notification-title" style={{color: this.state.titleColor}}>
 					{this.state.title}
 				</div>
@@ -435,14 +508,11 @@ class PopularStockData extends React.Component {
 		console.log('buy clicked');
 		if (isUserLoggedIn()) {
 			fetch('/get_user_info')
-			.then(response => {
-				console.log(response)
-				response.json()
-			})
+			.then(response => response.json())
 			.then(data => {
 				this.userInfo = data;
 				console.log(data)
-				ReactDOM.render(<BuySellPopup userInfo={data} stockInfo={this.props.stock} />, document.querySelector('#popup-container'));
+				ReactDOM.render(<BuySellPopup motive="buy" updateOwnedShares={this.updateOwnedShares} userInfo={data} stockInfo={this.props.stock} />, document.querySelector('#popup-container'));
 			})
 		}
 		else {
@@ -453,12 +523,13 @@ class PopularStockData extends React.Component {
 	sellStock = (event) => {
 		event.stopPropagation();
 		console.log('sell clicked!');
-		let requests = [fetch('/get_user_info'), fetch(`/get_portfolios/${this.state.symbol}`)]
-		Promise.all(requests)
-			.then(responses => Promise.all(responses.map(response => response.json())))
-			.then(userAndPortfolioData => {
-				console.log(userAndPortfolioData);
-			})
+		fetch('/get_user_info')
+		.then(response => response.json())
+		.then(data => {
+			console.log(data);
+			ReactDOM.render(<BuySellPopup motive="sell" updateOwnedShares={this.updateOwnedShares} userInfo={data} stockInfo={this.props.stock} portfolioInfo={this.state.portfolioInfo} />,
+				document.querySelector('#popup-container'));
+		})
 	}
 
 	componentDidMount() {
@@ -472,33 +543,24 @@ class PopularStockData extends React.Component {
 			Promise.all(requests)
 				.then(responses => Promise.all(responses.map(response => response.json())))
 				.then(watchlistAndPortfolioData => {
-					console.log(watchlistAndPortfolioData)
-					let buttonState, buttonText, inPortfolio;
+					let buttonState, buttonText, inPortfolio, portfolioInfo
 					
 					(watchlistAndPortfolioData[0].watching) ?
 						(buttonState="brightness(100%)", buttonText = "Unwatch") :
 						(buttonState="brightness(40%)", buttonText = "Watch");
 					
 					(watchlistAndPortfolioData[1].length) ? inPortfolio=true : inPortfolio=false;
+					inPortfolio ? (portfolioInfo = watchlistAndPortfolioData[1][0])
+						: (portfolioInfo = null);
 					
 					this.setState(() => ({
 						watchlistButtonText: buttonText,
 						watchlistButtonState: buttonState,
-						inPortfolio: inPortfolio
+						inPortfolio: inPortfolio,
+						portfolioInfo: portfolioInfo
 					}))
 					
 				})
-			fetch(`watchlist_handler/${this.state.symbol}`)
-			.then(response => response.json())
-			.then(data => {
-				let buttonState, buttonText;
-				(data.watching) ? (buttonState = "brightness(100%)", buttonText = "Unwatch") : 
-					(buttonState="brightness(40%)", buttonText = "Watch");
-				this.setState(()=> ({
-					watchlistButtonText: buttonText,
-					watchlistButtonState: buttonState,
-				}));
-			})
 		}
 
 		// Else just display initiale button state.
@@ -555,6 +617,17 @@ class PopularStockData extends React.Component {
 			watchlistButtonState: newButtonState,
 		}));
 		console.log("request sent!")
+	}
+
+	updateOwnedShares = (newQuantity, motive) => {
+		let newPortfolioInfo = this.state.portfolioInfo;
+		console.log(newPortfolioInfo)
+		motive === 'sell' ? 
+			(newPortfolioInfo.quantity = this.state.portfolioInfo.quantity - newQuantity) :
+			(newPortfolioInfo.quantity = this.state.portfolioInfo.quantity + newQuantity);
+		this.setState(() => ({
+			portfolioInfo: newPortfolioInfo
+		}))
 	}
 
 	render () {
