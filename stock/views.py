@@ -200,6 +200,7 @@ def sell_stocks(request):
         # get user's portfolio info
         user = User.objects.get(username=request.user)
         portfolios = Portfolio.objects.get(user=user,stock_symbol=stock_symbol)
+        print (portfolios)
         
         # if user has sold all his shares
         if portfolios.quantity == quantity:

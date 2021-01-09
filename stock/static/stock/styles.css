@@ -285,6 +285,10 @@ table.popular-stocks-table tr td {
     cursor: pointer;
 }
 
+#sell-stock-index-page:focus {
+    outline: none;
+}
+
 #buy-stock-index-page:focus {
     outline: none;
 }

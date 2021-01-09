@@ -632,7 +632,7 @@ class PopularStockData extends React.Component {
 					inPortfolio: true,
 					portfolioInfo: data[0]
 				}))
-				this.updateOwnedShares(quantity, 'buy');
+				this.updateOwnedShares(0, 'buy');
 			})
 		}
 		else {
@@ -818,7 +818,6 @@ class PopularStockTable extends React.Component {
 class PortfolioStockData extends React.Component {
 	constructor(props) {
 		super(props);
-		 console.log(this.props.portfolio)
 		let profitLosses = (parseInt(this.props.portfolio.liveStockData.regularMarketPrice) * this.props.portfolio.quantity) - parseInt(this.props.portfolio.totalSpent);
 		this.state = {
 			symbol: this.props.portfolio.symbol,
@@ -856,6 +855,7 @@ class PortfolioStockData extends React.Component {
 					updateState={this.updateState} 
 					userInfo={data} 
 					stockInfo={this.props.portfolio.liveStockData} 
+					updateOwnedShares={this.updateOwnedShares}
 				/>, 
 				document.querySelector('#popup-container')
 			);
@@ -876,6 +876,7 @@ class PortfolioStockData extends React.Component {
 					userInfo={data} 
 					stockInfo={this.props.portfolio.liveStockData}
 					portfolioInfo={this.state.portfolioInfo} 
+					updateOwnedShares={this.updateOwnedShares}
 				/>, 
 				document.querySelector('#popup-container')
 			);
@@ -904,7 +905,10 @@ class PortfolioStockData extends React.Component {
 			let totalQuantity = this.state.quantity - newQuantity;
 			let newTotalSpent = this.state.totalSpent - (newQuantity * this.state.currentPrice);
 			let newProfitLosses = (totalQuantity * this.state.currentPrice) - newTotalSpent;
-			console.log(newQuantity, newTotalSpent, newProfitLosses)
+			console.log(totalQuantity, newTotalSpent, newProfitLosses)
+			if (totalQuantity === 0) {
+				this.props.removeRow(this.state.symbol);
+			}
 			this.setState(() => ({
 				quantity: totalQuantity,
 				totalSpent: newTotalSpent,
@@ -913,6 +917,22 @@ class PortfolioStockData extends React.Component {
 		}
 	}
 
+	updateOwnedShares = (newQuantity, motive) => {
+
+		console.log('updating', newQuantity, motive)
+		
+		// duplicate the portfolioInfo object
+		let newPortfolioInfo = this.state.portfolioInfo;
+		console.log(newPortfolioInfo, newQuantity)
+		
+		// check if motive is to buy or sell to credit or debit total price.
+		motive === 'sell' ? 
+			(newPortfolioInfo.quantity = this.state.portfolioInfo.quantity - newQuantity) :
+			(newPortfolioInfo.quantity = this.state.portfolioInfo.quantity + newQuantity);
+		this.setState(() => ({
+			portfolioInfo: newPortfolioInfo
+		}))
+	}
 
 	render () {
 		return (
@@ -942,11 +962,15 @@ class PortfolioStockData extends React.Component {
 class PortfolioStockTable extends React.Component {
 	constructor(props) {
 		super(props);
-		this.portfolios = []
+		this.portfolios = [] 
+		let counter = 0;
 		this.props.portfolios.forEach(portfolio => {
+			counter += 1;
+			console.log(counter)
 			this.portfolios.push(<PortfolioStockData 
 				key={portfolio.symbol} 
 				portfolio={portfolio}
+				removeRow={this.removeRow}
 				clickHandler={this.removeRow} />)
 		})
 		console.log(this.portfolios)
@@ -955,13 +979,16 @@ class PortfolioStockTable extends React.Component {
 		}
 	}
 
-	// Removes stock from watchlist table.
+	// Removes stock from portfolio table.
 	removeRow = (symbol) => {
+		console.log('remove row working')
 		let filtered = this.state.portfolios.filter(portfolio => portfolio.key !== symbol);
 		this.setState(() => ({
-			stocksData: filtered
+			portfolios: filtered
 		}))
 	}
+
+
 
 	render() {
 		console.log(this.state.portfolios)

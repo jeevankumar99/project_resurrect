@@ -1,6 +1,8 @@
 fetch('/get_portfolios')
 .then(response => response.json())
 .then(data => {
+
+    console.log(data)
         
     let listOfTenStockSymbols = []
     let formattedData = [];
@@ -67,13 +69,16 @@ fetch('/get_portfolios')
             
             // Populate table rows with json data and store them locally.
             .then(liveData => {
+                console.log(liveData)
                 let tempDataIndex = 0;
                 liveData.forEach(liveChunksOfTen => {
                     liveChunksOfTen.quoteResponse.result.forEach(liveStock => {
+                        console.log(tempDataIndex)
                         tempData[tempDataIndex].liveStockData = liveStock;
                         tempDataIndex++;
                     })
                 })
+                console.log(tempData)
                 ReactDOM.render(<PortfolioStockTable portfolios={tempData} />, document.querySelector('#portfolio-stocks'));
             });
 
