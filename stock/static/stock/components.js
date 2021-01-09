@@ -291,8 +291,15 @@ class Autocomplete extends React.Component {
 			// To update fields according to purchase in portfolio page.
 			this.props.updateState ? (this.props.updateState(this.state.quantity, 'buy')) : (null);
 
-			// To update shares owned according to purchase
-			this.props.updateOwnedShares ? (this.props.updateOwnedShares(this.state.quantity, 'buy')) : (null);
+			if (this.props.checkPortfolioAndAdd) {
+				console.log('executing')
+				this.props.checkPortfolioAndAdd(this.state.quantity);
+			}
+			else {
+				// To update shares owned according to purchase
+				this.props.updateOwnedShares ? (this.props.updateOwnedShares(this.state.quantity, 'buy')) : (null);
+			}
+
 
 		});
 	}
@@ -600,7 +607,8 @@ class PopularStockData extends React.Component {
 				ReactDOM.render(
 					<BuySellPopup 
 						motive="buy" 
-						updateOwnedShares={this.updateOwnedShares} 
+						updateOwnedShares={this.updateOwnedShares}
+						checkPortfolioAndAdd = {this.checkPortfolioAndAdd} 
 						userInfo={data} 
 						stockInfo={this.props.stock} 
 					/>, 
@@ -610,6 +618,25 @@ class PopularStockData extends React.Component {
 		}
 		else {
 			window.location.replace('/login');
+		}
+	}
+
+	checkPortfolioAndAdd = (quantity=null) => {
+		console.log(this.state.symbol, this.state.inPortfolio, quantity);
+		if (!this.state.inPortfolio) {
+			fetch(`/get_portfolios/${this.state.symbol}`)
+			.then(response => response.json())
+			.then(data => {
+				console.log(data);
+				this.setState(() => ({
+					inPortfolio: true,
+					portfolioInfo: data[0]
+				}))
+				this.updateOwnedShares(quantity, 'buy');
+			})
+		}
+		else {
+			this.updateOwnedShares(quantity, 'buy');
 		}
 	}
 
@@ -682,19 +709,29 @@ class PopularStockData extends React.Component {
 
 	// to pass as prop for BuySellPopup to update this component's state.
 	updateOwnedShares = (newQuantity, motive) => {
+
+		console.log('updating', newQuantity, motive)
 		
 		// duplicate the portfolioInfo object
 		let newPortfolioInfo = this.state.portfolioInfo;
-		console.log(newPortfolioInfo)
+		console.log(newPortfolioInfo, newQuantity)
 		
 		// check if motive is to buy or sell to credit or debit total price.
 		motive === 'sell' ? 
 			(newPortfolioInfo.quantity = this.state.portfolioInfo.quantity - newQuantity) :
 			(newPortfolioInfo.quantity = this.state.portfolioInfo.quantity + newQuantity);
 		
+		if (newPortfolioInfo.quantity === 0) {
 			this.setState(() => ({
-			portfolioInfo: newPortfolioInfo
-		}))
+				inPortfolio: false,
+				portfolioInfo: null
+			}))
+		}
+		else {
+			this.setState(() => ({
+				portfolioInfo: newPortfolioInfo
+			}))
+		}
 	}
 
 	render () {
