@@ -60,6 +60,38 @@ def get_watchlist(request):
     return JsonResponse(serialized_watchlist, safe=False)
 
 @login_required(login_url='/login')
+def get_user_stats(request):
+    print('get_user_stats working')
+    if request.method == 'GET':
+        user = User.objects.get(username=request.user)
+        portfolios = Portfolio.objects.filter(user=user)
+        shares_owned = 0
+        portfolios_owned = 0
+        highest_spent = [0, '']
+        highest_shares =[0, '']
+        for portfolio in portfolios:
+            shares_owned += portfolio.quantity
+            if portfolio.total_spent > highest_spent[0]:
+                highest_spent[0] = portfolio.total_spent
+                highest_spent[1] = portfolio.stock_symbol
+            if portfolio.quantity > highest_shares[0]:
+                highest_shares[0] = portfolio.quantity
+                highest_shares[1] = portfolio.stock_symbol
+            portfolios_owned += 1
+        portfolio_info = {
+            'portfoliosOwned': portfolios_owned,
+            'sharesOwned': shares_owned,
+            'highestSpent': highest_spent[0],
+            'highestSpentStock': highest_spent[1],
+            'highestShares': highest_shares[0],
+            'highestSharesStock': highest_shares[1]
+        }
+        return JsonResponse({**user.serialize(), **portfolio_info}, safe=False)
+    else:
+        return JsonResponse({'error': 'GET request needed'}, status=400)
+
+
+@login_required(login_url='/login')
 def get_user_info(request):
     print('get_user_info is working')
     if request.method == "GET":
@@ -196,6 +228,7 @@ def sell_stocks(request):
         total_credit = data.get('totalCredit')
         current_price = data.get('currentPrice')
         long_name = data.get('longName')
+        net_profit_loss = data.get('netProfitLoss')            
 
         # get user's portfolio info
         user = User.objects.get(username=request.user)
@@ -225,6 +258,12 @@ def sell_stocks(request):
         # Credit the funds to his account  
         current_balance = float(user.balance) 
         user.balance = current_balance + total_credit
+        if net_profit_loss > 0:
+            current_profits = float(user.profits)
+            user.profits =  current_profits + net_profit_loss
+        else:
+            current_losses = float(user.losses)
+            user.losses = current_losses + (-1 * net_profit_loss)
         user.save()
         return JsonResponse({'message': "Shares sold, balance updated"}, status=200)
 

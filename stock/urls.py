@@ -21,4 +21,5 @@ urlpatterns = [
     path('my_transactions', views.my_transactions, name="my_transactions"),
     path('get_transactions', views.get_transactions, name="get_transactions"),
     path("sell_stocks", views.sell_stocks, name="sell_stocks"),
+    path("get_user_stats", views.get_user_stats, name="get_user_stats"),
 ]

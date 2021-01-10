@@ -1,4 +1,6 @@
+const profileIcon = "/static/stock/images/profile-icon.png";
 const searchIcon = "/static/stock/images/search-icon2.png";
+const settingsIcon = "/static/stock/images/settings-icon.png"
 const watchlistIcon = "/static/stock/images/watchlist-icon.png";
 const API_KEY = "906765926amshebc39f8abc4333cp190d7bjsnee05cad1a6d0";
 
@@ -308,6 +310,9 @@ class Autocomplete extends React.Component {
 	sellStock = () => {
 		console.log("sell stock clicked!");
 		let csrf_token = getCookie('csrftoken');
+		let netProfitLoss = this.state.total - ((
+			this.props.portfolioInfo.totalSpent / this.props.portfolioInfo.quantity
+			) * this.state.quantity);
 		fetch('/sell_stocks', {
 			method: 'PUT',
 			body: JSON.stringify({
@@ -316,6 +321,7 @@ class Autocomplete extends React.Component {
 				longName: this.state.longName,
 				totalCredit: this.state.total,
 				currentPrice: this.state.regularMarketPrice,
+				netProfitLoss: netProfitLoss
 			}),
 			headers: {'X-CSRFToken': csrf_token}
 		})
@@ -1017,13 +1023,116 @@ class PortfolioStockTable extends React.Component {
 class ProfileInfo extends React.Component {
 	constructor(props) {
 		super(props);
+		console.log(this.props.userInfo.portfoliosOwned)
+		let netProfitLoss = this.props.userInfo.profits - this.props.userInfo.losses
 		this.state = {
 			username: this.props.userInfo.username,
 			balance: this.props.userInfo.balance,
 			profits: this.props.userInfo.profits,
 			losses: this.props.userInfo.losses,
+			portfoliosOwned: this.props.userInfo.portfoliosOwned,
+			sharesOwned: this.props.userInfo.sharesOwned,
+			netProfitLoss: netProfitLoss.toFixed(2),
+			highestSpent: this.props.userInfo.highestSpent,
+			highestSpentStock: this.props.userInfo.highestSpentStock,
+			highestShares: this.props.userInfo.highestShares,
+			highestSharesStock: this.props.userInfo.highestSharesStock,
+			profilePicture: profileIcon
 
 		}
+	}
+
+	render() {
+		console.log('line 1036 working')
+		return (
+			<div id='user-info-container'>
+				<div id='username-header'>
+					<div className='user-info-div' id='user-profile-picture'>
+						<img src={this.state.profilePicture} id='profile-pic'/>
+					</div>
+					<div className='user-info-div' id='username-profile-page'>
+						<div id='username-actual'>
+							{this.state.username}
+						</div>
+						<div id='dmat-id'>
+							DMAT: XXXXXXXXX
+						</div>
+					</div>
+					<button className='user-info-div' id='settings-button-div'>
+						<div className='button-child'>
+							<img src={settingsIcon} id="settings-icon"></img>
+						</div>
+						<div className='button-child' id='setting-text'>Settings</div>
+					</button>
+					<div className='user-info-div' id='logout-button-div'>
+						<button onClick={() => window.location='/logout'} id='logout-button'>Logout</button>
+					</div>
+				</div>
+				<h2>User Stats</h2>
+				<div id="profile-parent-grid">
+					<div className='user-stats-grid' id="user-balance">
+						<font className='user-info-large'>
+							$ {this.state.balance}
+						</font>
+						<div className='user-info-small'>Balance</div>
+					</div>
+					<div className='user-stats-grid' id="user-profits">
+						<font style={{color: 'green'}} className='user-info-large'>
+							$ {this.state.profits}
+						</font>
+						<div className='user-info-small'>Profits</div>
+					</div>
+					<div  className='user-stats-grid' id="user-losses">
+						<font style={{color: 'red'}} className='user-info-large'>
+							$ {this.state.losses}
+						</font>
+						<div className='user-info-small'>Loss</div>
+					</div>
+					<div className='user-stats-grid' id="user-net-profit-loss">
+						<font className='user-info-large'>
+							$ {this.state.netProfitLoss > 0 ? 
+								('+' + this.state.netProfitLoss) :
+								(this.state.netProfitLoss) 
+							}
+						</font>
+						<div className='user-info-small'>Net Profit/Loss</div>
+					</div>
+					<div className='user-stats-grid' id='user-portfolios-owned'>
+						<font className='user-info-large'>
+							{this.state.portfoliosOwned}
+						</font>
+						<div className='user-info-small'>Portfolios Owned</div>
+					</div>
+					<div className='user-stats-grid' id="user-shares-owned">
+						<font className='user-info-large'>
+							{this.state.sharesOwned}
+						</font>
+						<div className='user-info-small'>Shares Owned</div>
+					</div>
+				</div>
+				<h2>Additional Info</h2>
+				<div id="profile-parent-grid">
+					<div className='user-stats-grid' id="user-highest-spent">
+						<font className='user-info-large'>
+							{this.state.highestSpentStock}
+						</font>
+						<div className='user-info-small'>Highest Spent</div>
+						<font className='user-info-large'>
+							$ {this.state.highestSpent}
+						</font>
+					</div>
+					<div className='user-stats-grid' id="user-highest-shares">
+						<font className='user-info-large'>
+							{this.state.highestSharesStock}
+						</font>
+						<div className='user-info-small'>Highest Shares</div>
+						<font className='user-info-large'>
+							{this.state.highestShares}
+						</font>
+					</div>
+				</div>
+			</div>
+		)
 	}
 
 }

@@ -667,6 +667,118 @@ table.popular-stocks-table tr td {
 
 
 
+/* profile.html */
+
+#profile-info-container {
+    width: 75%;
+    display: flex;
+    margin-left: auto;
+    margin-right: auto;
+    justify-content: center;
+}
+
+#user-info-container {
+    width: 100%;
+}
+
+#username-header {
+    padding: 10px;
+    border-bottom: 1px solid rgb(70, 70, 70);
+}
+
+#username-actual {
+    font-size: 36px;
+}
+
+#profile-parent-grid {
+    display: grid;
+    width: 100%;
+    grid-template-columns: auto auto auto;
+    background-color: rgb(18, 18, 18);
+    margin-top: 20px;
+    margin-left: auto;
+    margin-right: auto; 
+    border-bottom: 1px solid rgb(70, 70, 70);
+    padding-bottom: 10px;
+}
+
+.user-info-large {
+    font-size: 36px;
+}
+
+.user-stats-grid {
+    margin: 10px 0px 10px 0px;
+}
+
+#profile-pic {
+    width: 80px;
+}
+
+#username-header {
+    display: flex;
+    align-items: center;
+}
+
+.user-info-div {
+    display: inline;
+    margin-top: 5px;
+}
+
+#settings-button-div {
+    margin-left: auto;
+}
+
+.button-child {
+    display: inline;
+    vertical-align: middle;
+}
+
+#logout-button, #settings-button-div {
+    width: 100px;
+    height: 35px;
+    border: 0px;
+    border-radius: 15px;
+    background-color: red;
+    color: white;
+    font-size: medium;
+}
+
+#settings-button-div {
+    background-color: rgb(179, 179, 179);
+    color: black;
+    margin-right: 25px;
+}
+
+#logout-button:hover {
+    background-color: rgb(241, 69, 69);
+    cursor: pointer;
+}
+
+#logout-button:focus {
+    outline: none;
+    border: 0px;
+}
+
+#change-settings-button {
+    background-color: white;
+    color: black;
+    text-align: center;
+    align-items: center;
+}
+
+#settings-icon {
+    width: 26px;
+    margin-top: 2px;
+}
+
+
+
+
+
+
+
+
+
 
 
 
