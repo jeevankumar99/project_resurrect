@@ -84,7 +84,8 @@ def get_user_stats(request):
             'highestSpent': highest_spent[0],
             'highestSpentStock': highest_spent[1],
             'highestShares': highest_shares[0],
-            'highestSharesStock': highest_shares[1]
+            'highestSharesStock': highest_shares[1],
+            'totalInvestment': user.total_investment
         }
         return JsonResponse({**user.serialize(), **portfolio_info}, safe=False)
     else:
@@ -157,6 +158,8 @@ def purchase_stock(request):
         long_name = data.get('longName')
         user = User.objects.get(username=request.user)
         user.balance = balance
+        current_investment = float(user.total_investment)
+        user.total_investment = current_investment + total
         user.save()
         Transaction.objects.create(
             user=user,
@@ -257,7 +260,9 @@ def sell_stocks(request):
 
         # Credit the funds to his account  
         current_balance = float(user.balance) 
+        current_investment = float(user.total_investment)
         user.balance = current_balance + total_credit
+        user.total_investment = current_investment - total_credit
         if net_profit_loss > 0:
             current_profits = float(user.profits)
             user.profits =  current_profits + net_profit_loss

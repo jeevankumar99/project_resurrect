@@ -5,7 +5,7 @@ class User(AbstractUser):
     balance = models.DecimalField(decimal_places=2, default=25000, max_digits=20)
     profits = models.DecimalField(decimal_places=2, max_digits=20, default=0)
     losses = models.DecimalField(decimal_places=2, max_digits=20, default=0)
-    total_spent = models.DecimalField(decimal_places=2, max_digits=20, default=0)
+    total_investment = models.DecimalField(decimal_places=2, max_digits=20, default=0)
 
     def serialize(self):
         return {
@@ -13,7 +13,7 @@ class User(AbstractUser):
             'balance': self.balance,
             'profits': self.profits,
             'losses': self.losses,
-            'total_spent': self.total_spent
+            'total_investment': self.total_investment
         }
 
 class Portfolio(models.Model):

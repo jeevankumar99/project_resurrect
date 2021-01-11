@@ -2,6 +2,7 @@ const profileIcon = "/static/stock/images/profile-icon.png";
 const searchIcon = "/static/stock/images/search-icon2.png";
 const settingsIcon = "/static/stock/images/settings-icon.png"
 const watchlistIcon = "/static/stock/images/watchlist-icon.png";
+const stockIcon = "/static/stock/images/stock-icon.png";
 const API_KEY = "906765926amshebc39f8abc4333cp190d7bjsnee05cad1a6d0";
 
 
@@ -535,8 +536,8 @@ class PopularStockData extends React.Component {
 			marketChange: this.props.stock.regularMarketChange.toFixed(2),
 			marketChangePercent: this.props.stock.regularMarketChangePercent.toFixed(2),
 			marketOpen: this.props.stock.regularMarketOpen,
-			dayHigh: this.props.stock.regularMarketDayHigh,
-			dayLow: this.props.stock.regularMarketDayLow,
+			dayHigh: this.props.stock.regularMarketDayHigh.toFixed(2),
+			dayLow: this.props.stock.regularMarketDayLow.toFixed(2),
 			previousClose: this.props.stock.regularMarketPreviousClose,
 			isWatchlistPage: this.props.stock.isWatchlistPage,
 			watchlistButtonText: null,
@@ -1037,6 +1038,7 @@ class ProfileInfo extends React.Component {
 			highestSpentStock: this.props.userInfo.highestSpentStock,
 			highestShares: this.props.userInfo.highestShares,
 			highestSharesStock: this.props.userInfo.highestSharesStock,
+			totalInvestment: this.props.userInfo.totalInvestment,
 			profilePicture: profileIcon
 
 		}
@@ -1101,7 +1103,7 @@ class ProfileInfo extends React.Component {
 						<font className='user-info-large'>
 							{this.state.portfoliosOwned}
 						</font>
-						<div className='user-info-small'>Portfolios Owned</div>
+						<div className='user-info-small'>Stocks Owned</div>
 					</div>
 					<div className='user-stats-grid' id="user-shares-owned">
 						<font className='user-info-large'>
@@ -1129,6 +1131,12 @@ class ProfileInfo extends React.Component {
 						<font className='user-info-large'>
 							{this.state.highestShares}
 						</font>
+					</div>
+					<div className='user-stats-grid' id="user-highest-shares">
+						<font className='user-info-large'>
+							$ {this.state.totalInvestment}
+						</font>
+						<div className='user-info-small'>Total Investment</div>
 					</div>
 				</div>
 			</div>

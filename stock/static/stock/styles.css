@@ -27,7 +27,7 @@ body {
     z-index: 10;
 }
 
-.top-bar-link {
+.top-bar-link, #brand-title {
     display: inline;
     padding: 8px;
     vertical-align: middle;
@@ -37,14 +37,35 @@ body {
     text-decoration: none;
 }
 
+#brand-title {
+    padding: 0px;
+    padding-top: 2px;
+    align-items: center;
+    vertical-align: middle;
+}
+
 .top-bar-link:not(#top-bar-search):hover {
     background-color: rgb(60, 60, 60);
     border-radius: 20px;
     cursor: pointer;
 }
 
+
+
 #top-bar-login, #top-bar-portfolio {
     margin-left: auto;
+}
+
+#stock-icon {
+    width: 35px;
+    vertical-align: middle;
+}
+
+.brand-title-div {
+    display: inline-block;
+    color: gray;
+    padding-top: 4px;
+    font-size: larger;
 }
 
 

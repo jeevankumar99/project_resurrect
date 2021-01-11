@@ -15,7 +15,10 @@
     </head>
     <body>
         <div id="top-nav-bar">
-            <div class="top-bar-link" id="brand-title">Stocks</div>
+            <div  id="brand-title">
+                <img id="stock-icon" src="{% static '/stock/images/stock-icon.png' %}"/>
+                <div class='brand-title-div'> STOX</div>
+            </div>
             <a class="top-bar-link" id="top-bar-home" href="{% url 'index' %}">Home</a>
             <a class="top-bar-link" id="top-bar-watchlist" href="{% url 'my_watchlist' %}">Watchlist</a>
             <div id="top-bar-search-div">
