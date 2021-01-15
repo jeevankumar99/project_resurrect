@@ -19,27 +19,100 @@ class AdditionalInfo extends React.Component {
 			twoHundredDayAverage: this.props.stockInfo.twoHundredDayAverage,
 			marketState: this.props.stockInfo.marketState,
 			marketCap: this.props.stockInfo.marketCap,
+			inPortfolio: false,
 			currency: this.props.stockInfo.currency,
 		}
 		this.state.marketState === 'CLOSED' ? this.marketColor = 'red' : this.marketColor = 'green';
 	}
 
 	componentDidMount() {
-		fetch('/get_user_info')
-		.then(response => response.json())
-		.then(data => {
-			this.userInfo = data;
-			this.setState(() => ({
-				balance: data.balance,
-				profits: data.profits,
-				losses: data.losses
-			}))
-		})
+		if (isUserLoggedIn()) {
+			
+			fetch(`/get_portfolios/${this.props.stockInfo.symbol}`)
+			.then(response => response.json())
+			.then(data => {
+				if (data.length > 0) {
+					this.setState(() => ({
+						inPortfolio: true,
+						portfolioInfo: data[0]
+					}))
+				}
+			})
+		}	
 	}
 
 	// Renders the buy/sell popup once buy is clicked.
 	buyStock = () => {
-		ReactDOM.render(<BuySellPopup userInfo={this.userInfo} stockInfo={this.props.stockInfo} />, document.querySelector('#popup-container'));
+		if (isUserLoggedIn()) {
+			fetch('/get_user_info')
+			.then(response => response.json())
+			.then(data => {
+				this.userInfo = data;
+				ReactDOM.render(
+					<BuySellPopup 
+						motive="buy"
+						userInfo={this.userInfo} 
+						stockInfo={this.props.stockInfo}
+						portfolioInfo={this.state.portfolioInfo} 
+						updateOwnedShares={this.updateOwnedShares}
+					/>, 
+					document.querySelector('#popup-container')
+				);
+			})
+		}
+		else {
+			window.location.href = '/login';
+		}
+	}
+
+	sellStock = () => {
+		if (isUserLoggedIn()) {
+			fetch('/get_user_info')
+			.then(response => response.json())
+			.then(data => {
+				this.userInfo = data;
+				ReactDOM.render(
+					<BuySellPopup 
+						motive="sell"
+						userInfo={this.userInfo} 
+						stockInfo={this.props.stockInfo}
+						portfolioInfo={this.state.portfolioInfo} 
+						updateOwnedShares={this.updateOwnedShares}
+					/>, 
+					document.querySelector('#popup-container')
+				);
+			})
+		}
+		else {
+			window.location.href = '/login';
+		}
+	}
+
+	// to pass as prop for BuySellPopup to update this component's state.
+	updateOwnedShares = (newQuantity, motive) => {
+
+		console.log('updating', newQuantity, motive)
+		
+		// duplicate the portfolioInfo object
+		let newPortfolioInfo = this.state.portfolioInfo;
+		console.log(newPortfolioInfo, newQuantity)
+		
+		// check if motive is to buy or sell to credit or debit total price.
+		motive === 'sell' ? 
+			(newPortfolioInfo.quantity = this.state.portfolioInfo.quantity - newQuantity) :
+			(newPortfolioInfo.quantity = this.state.portfolioInfo.quantity + newQuantity);
+		
+		if (newPortfolioInfo.quantity === 0) {
+			this.setState(() => ({
+				inPortfolio: false,
+				portfolioInfo: null
+			}))
+		}
+		else {
+			this.setState(() => ({
+				portfolioInfo: newPortfolioInfo
+			}))
+		}
 	}
 	
 	render() {
@@ -54,7 +127,9 @@ class AdditionalInfo extends React.Component {
 					<div className="additional-data-children">Market Cap: <font color="white"> {this.state.marketCap} {this.state.currency}</font></div>
 					<div className="additional-data-children" id="buy-sell-button-div">
 						<button onClick={this.buyStock} className="buy-button" id="buy-button">Buy</button>
-						<button onClick={this.sellStock} className="sell-button"  id="sell-button">Sell</button>
+						{this.state.inPortfolio ? 
+							(<button onClick={this.sellStock} className="sell-button"  id="sell-button">Sell</button>) :
+							(null)}
 					</div>
 				</ul>
 
@@ -144,6 +219,7 @@ class Autocomplete extends React.Component {
  class BuySellPopup extends React.Component {
 	constructor(props) {
 		super(props);
+		console.log(this.props)
 		this.state = {
 			symbol: this.props.stockInfo.symbol,
 			longName: this.props.stockInfo.longName,
@@ -204,6 +280,7 @@ class Autocomplete extends React.Component {
 
 			// if selected quantity of shares is owned by user.
 			if (quantity < this.props.portfolioInfo.quantity) {
+				console.log(this.props.portfolioInfo)
 				increaseButton.disabled = false;
 				sellButton.disabled = false;
 				this.setState(state => ({
@@ -347,6 +424,7 @@ class Autocomplete extends React.Component {
 	}
 
 	render() {
+		console.log(this.props.portfolioInfo)
 		return (
 			<div>
 				<div id="overlay"></div>
