@@ -11,9 +11,7 @@ fetch('/get_watchlist')
     // Yahoo accepts ONLY upto 10 stock queries in one request.
     // Splits watchlist into arrays containg upto 10 stocks.
     if (data.length < 1) {
-        let emptyWatchlist = document.createElement('h3');
-        emptyWatchlist.innerHTML = "Stocks that you watch will be displayed here.";
-        document.querySelector('#watchlist-stocks').appendChild(emptyWatchlist);
+        showEmptyWatchlistMessage();
     }
 
     else {
@@ -96,7 +94,7 @@ fetch('/get_watchlist')
 
                 // Render the entire table with populated data.
                 .then(() => {
-                    localStorage.setItem('watchlistStockData', JSON.stringify(watchlistStockList))
+                    // localStorage.setItem('watchlistStockData', JSON.stringify(watchlistStockList))
                     ReactDOM.render(<PopularStockTable stocksData={watchlistStockList} />, document.querySelector('#watchlist-stocks'));
                 })
         }
@@ -117,3 +115,16 @@ fetch('/get_watchlist')
     }
 })
 .catch(err => console.error(err));
+
+function showEmptyWatchlistMessage(unmount=false) {
+
+
+    unmount ? (ReactDOM.unmountComponentAtNode(document.querySelector('#watchlist-stocks'))) 
+        : (null);
+    let emptyWatchlist = document.createElement('h3');
+    emptyWatchlist.id = 'empty-watchlist-message';
+    emptyWatchlist.innerHTML = "Stocks that you watch will be displayed here.";
+    let watchlistStocksDiv = document.querySelector('#watchlist-stocks');
+    watchlistStocksDiv.appendChild(emptyWatchlist);
+    watchlistStocksDiv.style.paddingLeft = '20px;'
+}

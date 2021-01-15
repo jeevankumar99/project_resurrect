@@ -528,7 +528,7 @@ class NotificationPopup extends React.Component {
 // Table Row Component (each stock in the popular's table)
 class PopularStockData extends React.Component {
 	constructor(props) {
-        super(props);
+		super(props);
 		this.state = {
 			symbol: this.props.stock.symbol,
 			longName: this.props.stock.longName,
@@ -600,6 +600,7 @@ class PopularStockData extends React.Component {
 		}
 
 	}
+
 
 	// open buy popup when buy is clicked.
 	buyStock = (event) => {
@@ -691,9 +692,6 @@ class PopularStockData extends React.Component {
 			newButtonState = 'brightness(40%)';
 		}
 
-		if (this.state.isWatchlistPage) {
-			this.props.clickHandler(this.state.symbol);
-		}
 
 		// Get CSRF token from cookies for POST request
 		let csrf_token = getCookie('csrftoken')
@@ -705,13 +703,16 @@ class PopularStockData extends React.Component {
 			}),
 			headers: {'X-CSRFToken': csrf_token}
 		})
-
-		// Change state
-		this.setState(state => ({
-			watchlistButtonText: newButtonText,
-			watchlistButtonState: newButtonState,
-		}));
-		console.log("request sent!")
+		.then(() => {
+			console.log("request sent!")
+			this.setState(state => ({
+				watchlistButtonText: newButtonText,
+				watchlistButtonState: newButtonState,
+			}));
+			if (this.state.isWatchlistPage) {
+				this.props.clickHandler(this.state.symbol);
+			}
+		})
 	}
 
 	// to pass as prop for BuySellPopup to update this component's state.
@@ -789,12 +790,21 @@ class PopularStockTable extends React.Component {
 		}
 	}
 
+
+	componentWillUnmount() {
+		console.log("Popular table unmounted")
+	}
+
 	// Removes stock from watchlist table.
 	removeRow = (symbol) => {
 		let filtered = this.state.stocksData.filter(stockComponent => stockComponent.key !== symbol);
+		console.log(filtered)
 		this.setState(state => ({
 			stocksData: filtered
 		}))
+		if (filtered.length === 0) {
+			showEmptyWatchlistMessage(true)
+		}
 	}
 
 	render() {
@@ -813,7 +823,7 @@ class PopularStockTable extends React.Component {
 						<th className="table-headers" id="table-close">Buy / Sell</th>
 					</tr>
 				</thead>
-				<tbody>
+				<tbody id='popular-stocks-data'>
 					{this.state.stocksData}
 				</tbody>
 			</table>

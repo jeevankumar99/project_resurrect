@@ -203,6 +203,10 @@ body {
     box-shadow: 1px 1px 10px black;
 }
 
+#empty-watchlist-message {
+    margin-left: 10px;
+}
+
 table.popular-stocks-table tr td {
     font-size: 18px;
 }
