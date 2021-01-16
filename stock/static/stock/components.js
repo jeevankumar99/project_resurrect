@@ -3,7 +3,7 @@ const searchIcon = "/static/stock/images/search-icon2.png";
 const settingsIcon = "/static/stock/images/settings-icon.png"
 const watchlistIcon = "/static/stock/images/watchlist-icon.png";
 const stockIcon = "/static/stock/images/stock-icon.png";
-const API_KEY = "906765926amshebc39f8abc4333cp190d7bjsnee05cad1a6d0";
+const API_KEY = "479462f012mshe76e1e5aaa27ccdp1567d6jsnd0b820804b3b";
 
 
 
@@ -610,7 +610,7 @@ class PopularStockData extends React.Component {
 		this.state = {
 			symbol: this.props.stock.symbol,
 			longName: this.props.stock.longName,
-			price: this.props.stock.regularMarketPrice,
+			price: this.props.stock.regularMarketPrice.toFixed(2),
 			marketChange: this.props.stock.regularMarketChange.toFixed(2),
 			marketChangePercent: this.props.stock.regularMarketChangePercent.toFixed(2),
 			marketOpen: this.props.stock.regularMarketOpen,
@@ -1492,6 +1492,6 @@ function isUserLoggedIn() {
 	}
 	console.log(mapPathToID[currentPath])
 	let navElement = document.querySelector(mapPathToID[currentPath]);
-	navElement.style.borderBottom = '2px solid white';
+	navElement ? (navElement.style.borderBottom = '2px solid white') : (null);
 })()
 
