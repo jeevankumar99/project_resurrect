@@ -311,6 +311,7 @@ class Autocomplete extends React.Component {
 				this.setState(() => ({
 					overSellShare: true
 				}))
+				sellButton.disabled = true;
 			}
 		}
 	}
@@ -1329,11 +1330,24 @@ class StockNewsChild extends React.Component {
 		}
 	}
 
+	openArticle = () => {
+		console.log("Article clicked!")
+		ReactDOM.render(
+			<ArticlePopup
+				title={this.state.title}
+				summary={this.state.summary}
+				author_name={this.state.author_name}
+			/>,
+			document.querSelector(''));
+	}
+
 	render() {
 		return (
-			<div className="stock-news-info">
+			<div className="stock-news-info" onClick={this.openArticle}>
 				<div className="stock-news-thumbnail-div">
-				<img className="stock-news-thumbnail" src={this.state.thumbnail}></img>
+					{this.state.thumbnail ? (
+						<img className="stock-news-thumbnail" src={this.state.thumbnail}></img>
+					): (null)}
 				</div>
 				<div><font className="news-title">{this.state.title}</font></div>
 				<div><font className="news-author">by {this.state.author_name}</font></div>
@@ -1361,6 +1375,7 @@ class StockNewsParent extends React.Component {
 	}
 
 	render() {
+		console.log(this.props.newsChildren)
 		return (
 			<div id="stock-news-component">
 				{this.state.newsChildrenData}

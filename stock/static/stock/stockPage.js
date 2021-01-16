@@ -51,7 +51,7 @@ fetch(`https://yahoo-finance-low-latency.p.rapidapi.com/v2/finance/news?symbols=
 .then(data => {
 
     // Display top 9 articles.
-    let slicedData = data.Content.result.slice(0, 9);
+    let slicedData = data.Content.result.slice(0, 8);
     ReactDOM.render(<StockNewsParent newsChildren={slicedData} />, document.querySelector('#stock-news'));
 })
 

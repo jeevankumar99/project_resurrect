@@ -345,7 +345,7 @@ table.popular-stocks-table tr td {
 }
 
 .stock-info-upper-row {
-    font-size: 28px;
+    font-size: 32px;
 }
 
 .stock-info-upper-row font {
@@ -378,7 +378,7 @@ table.popular-stocks-table tr td {
 }
 
 #stock-chart-and-data {
-    width:  80%;
+    width:  70%;
     margin-left: auto;
     margin-right: auto;
     margin-top: 20px;
@@ -405,10 +405,15 @@ table.popular-stocks-table tr td {
     background-color: rgb(46, 46, 46);
 }
 
+.stock-news-info:hover {
+    cursor: pointer;
+}
+
 #stock-news-component {
     display: grid;
     width: 100%;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    justify-content: center;
+    grid-template-columns: repeat(auto-fill, 300px);
     background-color: rgb(18, 18, 18);
 }
 
@@ -416,6 +421,7 @@ table.popular-stocks-table tr td {
     margin-top: 30px;
     width: 75%;
     display: flex;
+    background-color: black;
     margin-left: auto;
     margin-right: auto;
 }
@@ -430,7 +436,8 @@ table.popular-stocks-table tr td {
 }
 
 .stock-news-thumbnail {
-    height: 150px;
+    height: 200px;
+    width: 280px;
     margin: 0px auto 0px auto;
 }
 
@@ -439,6 +446,7 @@ table.popular-stocks-table tr td {
     height: 200px;
     border-radius: 10px;
     margin-bottom: 8px;
+    overflow: hidden;
 }
 
 #buy-sell-button-div {
