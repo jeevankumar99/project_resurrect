@@ -1477,3 +1477,21 @@ function isUserLoggedIn() {
 		return false;
 	}
 }
+
+
+// Show the user is current page location by highlighting the elem in navbar.
+// Immediately Invoked Function Expression
+(function indicateCurrentPage() {
+	let currentPath = window.location.pathname;
+	const mapPathToID = {
+		'/': '#top-bar-home',
+		'/my_watchlist': '#top-bar-watchlist',
+		'/my_portfolio': '#top-bar-portfolio',
+		'/my_transactions': '#top-bar-transactions',
+		'/my_profile': '#top-bar-profile'
+	}
+	console.log(mapPathToID[currentPath])
+	let navElement = document.querySelector(mapPathToID[currentPath]);
+	navElement.style.borderBottom = '2px solid white';
+})()
+
