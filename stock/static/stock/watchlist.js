@@ -68,7 +68,7 @@ fetch('/get_watchlist')
                 requests.push(fetch(`https://yahoo-finance-low-latency.p.rapidapi.com/v6/finance/quote?symbols=${chunksOfTen}`, {
                     "method": "GET",
                     "headers": {
-                        "x-rapidapi-key": "479462f012mshe76e1e5aaa27ccdp1567d6jsnd0b820804b3b",
+                        "x-rapidapi-key": API_KEY,
                         "x-rapidapi-host": "yahoo-finance-low-latency.p.rapidapi.com"
                     }
                 }))

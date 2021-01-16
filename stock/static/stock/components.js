@@ -3,7 +3,7 @@ const searchIcon = "/static/stock/images/search-icon2.png";
 const settingsIcon = "/static/stock/images/settings-icon.png"
 const watchlistIcon = "/static/stock/images/watchlist-icon.png";
 const stockIcon = "/static/stock/images/stock-icon.png";
-const API_KEY = "479462f012mshe76e1e5aaa27ccdp1567d6jsnd0b820804b3b";
+const API_KEY = "2512804e5dmsh4c41069e53a5f0fp15b71fjsnf9d6cab3cadf";
 
 
 
@@ -133,6 +133,48 @@ class AdditionalInfo extends React.Component {
 					</div>
 				</ul>
 
+			</div>
+		)
+	}
+}
+
+class ArticlePopup extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {}
+	}
+	redirectToArticle = () => {
+		let newTab = window.open(this.props.url, '_blank');
+		newTab.focus
+	}
+
+	// Closes the news popup.
+	closePopup = () => {
+		console.log('close popup button clicked!');
+		ReactDOM.unmountComponentAtNode(document.querySelector('#popup-container'));
+	}
+	render() {
+		console.log("popup article rendering")
+		return (
+			<div>
+				<div id="overlay"></div>
+				<div id='article-popup'>
+					<div className='article-popup-component' id='popup-header-div'>
+						<div id='news-popup-title'>
+							{this.props.title}
+							<div><font id='news-author-text'>by {this.props.author_name}</font></div>
+						</div>
+						<div id='popup-close-button-div'>
+							<button onClick={this.closePopup} id="popup-close-button">X</button>
+						</div>
+					</div>
+					<div className='article-popup-component' id='article-summary'>
+						{this.props.summary}
+					</div>
+					<div className='article-popup-component' id='article-read-more'>
+						<button onClick={this.redirectToArticle} id="read-more-button">Open full article</button>
+					</div>
+				</div>
 			</div>
 		)
 	}
@@ -1326,7 +1368,8 @@ class StockNewsChild extends React.Component {
 			title: this.props.newsInfo.title.replace('&#39;', "'"),
 			summary: this.props.newsInfo.summary,
 			author_name: this.props.newsInfo.author_name,
-			thumbnail: this.props.newsInfo.thumbnail
+			thumbnail: this.props.newsInfo.thumbnail,
+			url: this.props.newsInfo.url
 		}
 	}
 
@@ -1337,8 +1380,9 @@ class StockNewsChild extends React.Component {
 				title={this.state.title}
 				summary={this.state.summary}
 				author_name={this.state.author_name}
+				url={this.state.url}
 			/>,
-			document.querSelector(''));
+			document.querySelector('#popup-container'));
 	}
 
 	render() {
