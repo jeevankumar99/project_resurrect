@@ -219,6 +219,7 @@ class Autocomplete extends React.Component {
  class BuySellPopup extends React.Component {
 	constructor(props) {
 		super(props);
+		this.props.motive === 'sell' ? this.headerMotive = 'Sell' : this.headerMotive = 'Buy'
 		console.log(this.props)
 		this.state = {
 			symbol: this.props.stockInfo.symbol,
@@ -233,6 +234,7 @@ class Autocomplete extends React.Component {
 			liveBalance: parseFloat(this.props.userInfo.balance),
 			overBalance: false,
 			overSellShare: false,
+			headerMotive: this.headerMotive
 		}
 
 	}
@@ -268,7 +270,7 @@ class Autocomplete extends React.Component {
 				total: state.regularMarketPrice * quantity,
 				quantity: quantity,
 				liveBalance: state.balance - (state.regularMarketPrice * quantity),
-				overBalance: overBalance
+				overBalance: overBalance,
 			}))
 		}
 
@@ -287,7 +289,7 @@ class Autocomplete extends React.Component {
 					total: state.regularMarketPrice * quantity,
 					quantity: quantity,
 					liveBalance: state.balance + (state.regularMarketPrice * quantity),
-					overSellShare: false
+					overSellShare: false,
 				}))
 			}
 
@@ -431,7 +433,7 @@ class Autocomplete extends React.Component {
 				<div className="buy-sell-popup">
 					<div id='popup-header-div'>
 						<div id="popup-title">
-							Buy {this.props.stockInfo.symbol} stocks
+							{this.state.headerMotive} {this.props.stockInfo.symbol} stocks
 						</div>
 						<div id='popup-close-button-div'>
 							<button onClick={this.closePopup} id="popup-close-button">X</button>
