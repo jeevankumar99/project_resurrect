@@ -4,6 +4,7 @@ const settingsIcon = "/static/stock/images/settings-icon.png"
 const watchlistIcon = "/static/stock/images/watchlist-icon.png";
 const stockIcon = "/static/stock/images/stock-icon.png";
 const API_KEY = "2512804e5dmsh4c41069e53a5f0fp15b71fjsnf9d6cab3cadf";
+const noThumbnailImage = "/static/stock/images/no-image-icon.png"
 
 
 
@@ -1391,7 +1392,7 @@ class StockNewsChild extends React.Component {
 				<div className="stock-news-thumbnail-div">
 					{this.state.thumbnail ? (
 						<img className="stock-news-thumbnail" src={this.state.thumbnail}></img>
-					): (null)}
+					): (<img className="stock-news-thumbnail" src={noThumbnailImage}></img>)}
 				</div>
 				<div><font className="news-title">{this.state.title}</font></div>
 				<div><font className="news-author">by {this.state.author_name}</font></div>
