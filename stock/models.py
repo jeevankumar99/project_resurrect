@@ -9,6 +9,7 @@ class User(AbstractUser):
 
     def serialize(self):
         return {
+            'full_name': self.first_name + ' ' + self.last_name,
             'username': self.username,
             'balance': self.balance,
             'profits': self.profits,

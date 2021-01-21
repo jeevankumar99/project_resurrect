@@ -9,16 +9,26 @@
             {{ err_message }}
         </div>
     {% endif %}
+    <div id='register-title'>Welcome to STOX</div>
     <div id="register-container">
-        <h2>Register</h2>
         <div id="register-form">
+            <div id="register-box-title">Register</div>
             <form action="{% url 'register' %}" method="post">
                 {% csrf_token %}
-                <input autofocus class="register-input-field" id="register-username" name="username" type="text" placeholder="Username">
+                <div id="register-first-last-div">
+                    <input autofocus class="register-input-field"  id="register-firstname" name="first_name" type="text" placeholder="First Name">
+                    <input class="register-input-field"  id="register-lastname" name="last_name" type="text" placeholder="Last Name">
+                </div>
+                <input class="register-input-field" id="register-username" name="username" type="text" placeholder="Username">
+                <input class="register-input-field" id="register-email" name="email" type="text" placeholder="Email">
                 <input class="register-input-field" id="register-password" name="password" type="password" placeholder="Password">
                 <input class="register-input-field" id="register-password-confirm" name="password_confirm" type="password" placeholder="Confirm password">
                 <input id="register-button" type="submit" value="Register">
             </form>
+            <div id="login-register-div">
+                Already have an account? 
+                <a id="login-register-link" href="{% url 'login' %}">Login Here</a>
+            </div>
         </div>
     </div>
 

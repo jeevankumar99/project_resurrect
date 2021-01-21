@@ -1162,6 +1162,7 @@ class ProfileInfo extends React.Component {
 		let netProfitLoss = this.props.userInfo.profits - this.props.userInfo.losses
 		this.state = {
 			username: this.props.userInfo.username,
+			fullName: this.props.userInfo.full_name,
 			balance: this.props.userInfo.balance,
 			profits: this.props.userInfo.profits,
 			losses: this.props.userInfo.losses,
@@ -1188,7 +1189,7 @@ class ProfileInfo extends React.Component {
 					</div>
 					<div className='user-info-div' id='username-profile-page'>
 						<div id='username-actual'>
-							{this.state.username}
+							{this.state.fullName}
 						</div>
 						<div id='dmat-id'>
 							DMAT: XXXXXXXXX

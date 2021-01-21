@@ -195,6 +195,8 @@ def my_transactions(request):
 def register_view(request):
     if request.method == "POST":
         username = request.POST["username"]
+        first_name = request.POST["first_name"]
+        last_name = request.POST["last_name"]
         password = request.POST["password"]
         password_confirm = request.POST["password_confirm"]
 
@@ -204,7 +206,11 @@ def register_view(request):
             })
 
         try:
-            new_user = User.objects.create_user(username=username, password=password)
+            new_user = User.objects.create_user(
+                username=username, 
+                password=password,
+                first_name=first_name,
+                last_name=last_name)
             new_user.save()
         except IntegrityError:
             return render(request, "stock/register.html", {

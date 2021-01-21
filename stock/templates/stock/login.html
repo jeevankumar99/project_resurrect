@@ -8,18 +8,19 @@
         {{ err_message }}
     </div>
     {% endif %}
+    <div id="login-title">Welcome to STOX</div>
     <div id="login-container">
-        <h2>Login</h2>
         <div id="login-form">
+            <div id='login-box-title'>Login</div>
             <form action="{% url 'login' %}" method="post">
                 {% csrf_token %}
                 <input autofocus class="login-input-field" id="login-username" name="username" type="text" placeholder="Username">
-                <input class="login-input-field" id="login-password" name="password" type="password" placeholder="password">
+                <input class="login-input-field" id="login-password" name="password" type="password" placeholder="Password">
                 <input id="login-button" type="submit" value="Login">
             </form>
             <div id="login-register-div">
                 Don't have an account? 
-                <a href="{% url 'register' %}">Register Here</a>
+                <a id="login-register-link" href="{% url 'register' %}">Register Here</a>
             </div>
         </div>
     </div>
