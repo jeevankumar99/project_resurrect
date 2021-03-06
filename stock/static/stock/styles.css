@@ -944,6 +944,16 @@ table.popular-stocks-table tr td {
     margin-top: 15px;
 }
 
+#login-button:hover, #register-button:hover {
+        cursor: pointer;
+        width: 105px;
+        height: 42px;
+}
+
+#login-button:focus, #register-button:focus {
+    outline: none;
+}
+
 #login-register-div {
     margin-top: 20px;
 }
