@@ -678,6 +678,11 @@ table.popular-stocks-table tr td {
     overflow: hidden;
 }
 
+#notification-content {
+    margin-top: 10px;
+}
+
+
 #article-popup {
     position: fixed;
     top: 50%;

@@ -3,7 +3,7 @@ const searchIcon = "/static/stock/images/search-icon2.png";
 const settingsIcon = "/static/stock/images/settings-icon.png"
 const watchlistIcon = "/static/stock/images/watchlist-icon.png";
 const stockIcon = "/static/stock/images/stock-icon.png";
-const API_KEY = "2512804e5dmsh4c41069e53a5f0fp15b71fjsnf9d6cab3cadf";
+const API_KEY = "dd19c41ffamshb752f586ea42d17p1b3226jsn5660aab99952";
 const noThumbnailImage = "/static/stock/images/no-image-icon.png"
 
 
@@ -38,6 +38,8 @@ class AdditionalInfo extends React.Component {
 						portfolioInfo: data[0]
 					}))
 				}
+				console.log(data);
+				console.log(this.props.stockInfo)
 			})
 		}	
 	}
@@ -94,15 +96,26 @@ class AdditionalInfo extends React.Component {
 
 		console.log('updating', newQuantity, motive)
 		
-		// duplicate the portfolioInfo object
-		let newPortfolioInfo = this.state.portfolioInfo;
-		console.log(newPortfolioInfo, newQuantity)
-		
-		// check if motive is to buy or sell to credit or debit total price.
-		motive === 'sell' ? 
-			(newPortfolioInfo.quantity = this.state.portfolioInfo.quantity - newQuantity) :
-			(newPortfolioInfo.quantity = this.state.portfolioInfo.quantity + newQuantity);
-		
+		if (this.state.portfolioInfo) {
+
+			// duplicate the portfolioInfo object
+			var newPortfolioInfo = this.state.portfolioInfo;
+			console.log(newPortfolioInfo, newQuantity);
+			
+			// check if motive is to buy or sell to credit or debit total price.
+			motive === 'sell' ? 
+				(newPortfolioInfo.quantity = this.state.portfolioInfo.quantity - newQuantity) :
+				(newPortfolioInfo.quantity = this.state.portfolioInfo.quantity + newQuantity);
+			
+		}
+		else {
+			var newPortfolioInfo = {};
+			newPortfolioInfo.quantity = newQuantity;
+			newPortfolioInfo.symbol = this.props.stockInfo.symbol;
+			newPortfolioInfo.totalSpent = newQuantity * this.props.stockInfo.regularMarketPrice;
+
+		}
+
 		if (newPortfolioInfo.quantity === 0) {
 			this.setState(() => ({
 				inPortfolio: false,
@@ -111,9 +124,11 @@ class AdditionalInfo extends React.Component {
 		}
 		else {
 			this.setState(() => ({
-				portfolioInfo: newPortfolioInfo
+				portfolioInfo: newPortfolioInfo,
+				inPortfolio: true
 			}))
 		}
+		console.log(this.state)
 	}
 	
 	render() {
@@ -408,8 +423,9 @@ class Autocomplete extends React.Component {
 			// To get display notification once purchase is complete.
 			let info = {
 				title: 'Purchase Successful!',
-				content: `You bought ${this.state.quantity} stocks of ${this.state.symbol} for ${this.state.total}`,
-				titleColor: 'rgb(37, 153, 37)'
+				content: <div>You bought <b>{this.state.quantity}</b> stocks of <b>{this.state.symbol}</b> for <b>${this.state.total}</b></div>,
+				titleColor: 'green',
+				backgroundColor: 'rgb(174, 255, 191)'
 			}
 			this.closePopup();
 			ReactDOM.render(<NotificationPopup info={info} />, document.querySelector('#notification-container'));
@@ -453,9 +469,10 @@ class Autocomplete extends React.Component {
 		.then(data => {
 			console.log(data);
 			let info = {
-				title: "Shares Sold Successfully",
-				content: `You sold ${this.state.quantity} stocks of ${this.state.symbol} for ${this.state.total}`, 
-				titleColor: 'red'
+				title: "Shares Sold Successfully!",
+				content: <div>You Sold <b>{this.state.quantity}</b> stocks of <b>{this.state.symbol}</b> for <b>${this.state.total}</b></div>,
+				titleColor: 'red',
+				backgroundColor: 'rgb(255, 175, 202)'
 			}
 
 			// updates owned shares from the parent component's state
@@ -618,7 +635,8 @@ class NotificationPopup extends React.Component {
 		this.state = {
 			title: this.props.info.title,
 			content: this.props.info.content,
-			titleColor: this.props.info.titleColor
+			titleColor: this.props.info.titleColor,
+			backgroundColor: this.props.info.backgroundColor,
 		}
 	}
 
@@ -629,19 +647,21 @@ class NotificationPopup extends React.Component {
 			let notificationPopup = document.querySelector('#notification-popup');
 			notificationPopup.style.animationName = 'slide_out';
 			notificationPopup.style.animationFillMode = 'backwards';
-		}, 4000)
+		}, 5000)
 
 		// Closes the popup after 5 seconds.
 		setTimeout(() => {
 			ReactDOM.unmountComponentAtNode(document.querySelector('#notification-container'));
-		}, 5000);
+		}, 6000);
 		
 		return (
-			<div id="notification-popup" style={{border: `1px solid ${this.state.titleColor}`}}>
-				<div id="notification-title" style={{color: this.state.titleColor}}>
+			<div id="notification-popup" style={{backgroundColor: this.state.backgroundColor}}>
+				<div id="notification-title" style={{color: this.state.titleColor, borderBottom: `1px solid ${this.state.titleColor}`}}>
 					{this.state.title}
 				</div>
-				<div id="notification-content">{this.state.content}</div>
+				<div id="notification-content" style={{color: this.state.titleColor}}>
+					{this.state.content}
+				</div>
 			</div>
 		)
 	}
