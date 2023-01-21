@@ -59,6 +59,18 @@ def get_watchlist(request):
     serialized_watchlist = [stock.serialize() for stock in watching_stocks]
     return JsonResponse(serialized_watchlist, safe=False)
 
+def server_check(request):
+    if request.method == 'GET':
+        return JsonResponse(
+            {'isServerOnline': True},
+            status=200
+        )
+    else:
+        return JsonResponse(
+            {'error': "GET request needed"},
+            status=400
+        )
+
 @login_required(login_url='/login')
 def get_user_stats(request):
     print('get_user_stats working')
